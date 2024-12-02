@@ -1,0 +1,129 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+header, footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+main {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+button {
+    background: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+input[type="number"] {
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+}
+
+th, td {
+    border: 1px solid #ddd; /* 각 셀에 테두리 추가 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    padding: 10px; /* 내부 여백 */
+}
+
+th {
+    background-color: #f4f4f4; /* 헤더 셀 배경색 */
+    font-weight: bold;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px;
+}
+
+a {
+    display: block;
+    text-align: center;
+    margin: 20px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.matched {
+    color: green;
+    font-weight: bold;
+}
+
+.unmatched {
+    color: red;
+    font-weight: bold;
+}
+
+button.matched {
+    background-color: green;
+}
+
+button.unmatched {
+    background-color: red;
+}
+
+/* 당첨 번호 공 스타일 */
+.lotto-ball {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    line-height: 50px;
+    text-align: center;
+    margin: 5px;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.2)
+    ); /* 추가 효과 */
+}
+
+/* 랜덤 색상을 적용할 클래스 */
+.color-red {
+    background-color: #e74c3c; /* 빨강 */
+}
+
+.color-blue {
+    background-color: #3498db; /* 파랑 */
+}
+
+.color-green {
+    background-color: #2ecc71; /* 초록 */
+}
+
+.color-yellow {
+    background-color: #f1c40f; /* 노랑 */
+}
+
+.color-orange {
+    background-color: #e67e22; /* 주황 */
+}

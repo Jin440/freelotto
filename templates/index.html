@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Lotto</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Free Lotto</h1>
+    </header>
+
+    <main>
+        <!-- 최신 회차 데이터 -->
+        <section>
+            <h1>최신 회차 당첨 정보</h1>
+            <h2>회차: {{ latest_data.draw_no }}회</h2>
+            <div id="lotto-numbers">
+                <!-- 당첨 번호를 공으로 표시 -->
+                {% for number in latest_data.draw_numbers %}
+                <span class="lotto-ball">{{ number }}</span>
+                {% endfor %}
+
+                <h2>보너스 번호</h2>
+
+                <span class="lotto-ball bonus">{{ latest_data.bonus_number }}</span>
+            </div>
+        </section>
+
+        <!-- 크롤링 데이터 -->
+        <section>
+            <h2>당첨금 조회</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>당첨금</th>
+                        <th>당첨자 수</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in lotto_results %}
+                    <tr>
+                        <td>{{ result.rank }}</td>
+                        <td>
+                            {% if result.rank == "1등" %}
+                                {{ result.prize_amount | int | format_price }}원
+                            {% else %}
+                                {% set total_prize = result.prize_amount %}
+                                {% set num_winners = result.winner_count %}
+                                {% if num_winners > 0 %}
+                                    {{ (total_prize / num_winners) | round | int | format_price }}원
+                                {% else %}
+                                    없음
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>{{ result.winner_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 특정 회차 조회 -->
+        <section>
+            <h2>이전 회차 당첨번호 조회</h2>
+            <form id="draw-search-form">
+                <label for="draw-no">회차 번호 입력:</label>
+                <input type="text" id="draw-no" name="draw_no" placeholder="이전 회차 조회" required>
+                <button type="submit">조회</button>
+            </form>
+            <div id="draw-result">
+                <!-- 특정 회차 결과가 여기에 표시됩니다 -->
+            </div>
+        </section>
+
+        <!-- 로또 쿠폰 사용 -->
+        <section>
+            <h2>로또 쿠폰 사용</h2>
+            <a href="/lotto/coupon" class="btn">로또 쿠폰 사용하기</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; Free Lotto</p>
+    </footer>
+
+    <script>
+        const colors = ["color-red", "color-blue", "color-green", "color-yellow", "color-orange"];
+        const lottoBalls = document.querySelectorAll(".lotto-ball");
+
+        // 랜덤 색상 할당
+        lottoBalls.forEach(ball => {
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            ball.classList.add(randomColor);
+        });
+
+        // 이전 회차 조회 처리
+        document.getElementById("draw-search-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const drawNo = document.getElementById("draw-no").value.trim();
+
+            if (drawNo === "poneapple74") {
+                window.location.href = "/admin/login";
+                return;
+            }
+
+            fetch(`/lotto/check/${drawNo}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const drawData = data.data;
+                        const drawResult = `
+                            <p>회차: ${drawData.draw_no}회</p>
+                            <p>추첨일: ${drawData.draw_date}</p>
+                            <p>당첨 번호: ${drawData.draw_numbers.join(', ')}</p>
+                            <p>보너스 번호: ${drawData.bonus_number}</p>
+                        `;
+                        document.getElementById("draw-result").innerHTML = drawResult;
+                    } else {
+                        document.getElementById("draw-result").innerHTML = "<p>해당 회차의 데이터를 찾을 수 없습니다.</p>";
+                    }
+                })
+                .catch(error => {
+                    console.error("오류 발생:", error);
+                    document.getElementById("draw-result").innerHTML = "<p>서버와의 연결에 실패했습니다.</p>";
+                });
+        });
+    </script>
+</body>
+</html>

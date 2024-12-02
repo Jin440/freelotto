@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쿠폰 관리</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>쿠폰 관리 페이지</h1>
+
+    <!-- 쿠폰 생성 버튼 -->
+    <button id="createCouponBtn">쿠폰 생성</button>
+
+    <!-- 쿠폰 리스트 -->
+    <table border="1">
+        <thead>
+            <tr>
+                <th>쿠폰 ID</th>
+                <th>쿠폰 코드</th>
+                <th>사용 여부</th>
+                <th>생성 일자</th>
+                <th>삭제</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for coupon in coupons %}
+            <tr>
+                <td>{{ coupon.id }}</td>
+                <td>{{ coupon.coupon_code }}</td>
+                <td>{{ "사용됨" if coupon.is_used else "미사용" }}</td>
+                <td>{{ coupon.created_at }}</td>
+                <td>
+                    <!-- 삭제 버튼 -->
+                    <button class="delete-btn" data-coupon-id="{{ coupon.id }}">삭제</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        // 쿠폰 생성
+        document.getElementById("createCouponBtn").addEventListener("click", function () {
+            fetch("/admin/coupons/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`쿠폰 생성 성공: ${data.coupon_code}`);
+                } else {
+                    alert(`쿠폰 생성 실패: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                alert(`오류 발생: ${error.message}`);
+            });
+        });
+    
+        // 쿠폰 삭제
+        document.querySelectorAll(".delete-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                const couponId = this.dataset.couponId;
+                if (confirm(`쿠폰 ID ${couponId}를 삭제하시겠습니까?`)) {
+                    fetch("/admin/coupons/delete", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ action: "delete", coupon_id: couponId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("쿠폰 삭제 완료!");
+                            location.reload();
+                        } else {
+                            alert(`삭제 실패: ${data.message}`);
+                        }
+                    })
+                    .catch(err => alert("삭제 중 오류 발생!"));
+                }
+            });
+        });
+    </script>
+</body>
+</html>

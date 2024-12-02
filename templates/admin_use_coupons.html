@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쿠폰 사용 내역</title>
+</head>
+<body>
+    <h1>쿠폰 사용 내역</h1>
+    <h2>다음 회차: {{ latest_draw_no }}회</h2>
+
+    <table id="coupon-uses-table" border="1">
+        <thead>
+            <tr>
+                <th>쿠폰 코드</th>
+                <th>유튜브 해시태그</th>
+                <th>사용 시간</th>
+                <th>선택한 로또 번호</th>
+                <th>회차</th>  <!-- 회차를 추가로 출력 -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 데이터가 여기에 들어갑니다 -->
+            {% for coupon_use in coupon_uses %}
+                <tr>
+                    <td>{{ coupon_use.coupon_code }}</td>  <!-- 쿠폰 코드 출력 -->
+                    <td>{{ coupon_use.youtube_hashtag }}</td>
+                    <td>{{ coupon_use.used_at }}</td>
+                    <td>{{ coupon_use.selected_numbers | join(', ') }}</td>  <!-- 로또 번호 출력 -->
+                    <td>{{ coupon_use.draw_no}}</td>  <!-- 최신 회차 +1 출력 -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

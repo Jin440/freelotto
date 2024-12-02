@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free lotto</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='lotto_coupon.css') }}">
+</head>
+<body>
+
+    <div class="top-menu">
+        <a href="/gamerule" class="game-rule-button">게임 방법</a>
+    </div>
+
+    <h1>무료 로또 추첨</h1>
+    <p>1~45 중에서 6개의 숫자를 선택하세요.</p>
+
+    <!-- 숫자 버튼 -->
+    <div class="container" id="button-container"></div>
+
+    <!-- 사용자 입력 -->
+    <div class="input-group">
+        <label for="coupon-code">쿠폰 코드</label>
+        <input type="text" id="coupon-code" placeholder="">
+        <label for="youtube-hashtag">유튜브 핸들</label>
+        <input type="text" id="youtube-hashtag" placeholder="">
+    </div>
+
+    <!-- 액션 버튼 -->
+    <div class="actions">
+        <button id="auto-btn">자동 선택</button>
+        <button id="submit-btn">로또 추첨 쿠폰 사용</button>
+        <button id="view-coupons-btn">쿠폰 사용 내역 조회</button>
+    </div>
+
+    <!-- 결과 출력 -->
+    <div id="result" class="result"></div>
+
+    <!-- 로딩 메시지 -->
+    <div id="loading-message" style="display: none;">조회 중입니다...</div>
+
+    <!-- 팝업창 -->
+    <div id="popupOverlay" class="overlay"></div>
+    <div id="couponPopup" class="popup-container">
+        <div class="popup-content">
+            <h2>내 로또 추첨권 조회</h2>
+            <label for="hashtag-input">유튜브 핸들 입력:</label>
+            <input type="text" id="hashtag-input" placeholder="유튜브 핸들">
+            <button id="fetch-coupon-btn">조회</button>
+            <div id="coupon-info">
+                <h3>쿠폰 사용 내역</h3>
+                <p>현재 핸들 사용된 쿠폰 수: <span id="hashtag-coupon-count">0</span></p>
+                <table id="coupon-uses-table">
+                    <thead>
+                        <tr>
+                            <th>쿠폰 코드</th>
+                            <th>사용 시간</th>
+                            <th>로또 번호</th>
+                            <th>회차</th>
+                            <th>추첨일</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 쿠폰 사용 내역이 여기에 출력됩니다 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 숫자 버튼 생성
+        for (let i = 1; i <= 45; i++) {
+            const button = document.createElement("button");
+            button.classList.add("btn");
+            button.textContent = i;
+            button.addEventListener("click", () => toggleButton(button));
+            document.getElementById("button-container").appendChild(button);
+        }
+
+        // 버튼 토글
+        function toggleButton(button) {
+            const selectedButtons = document.querySelectorAll(".btn.on");
+            if (button.classList.contains("on")) {
+                button.classList.remove("on");
+            } else if (selectedButtons.length < 6) {
+                button.classList.add("on");
+            } else {
+                alert("최대 6개만 선택할 수 있습니다.");
+            }
+        }
+
+        // 자동 선택
+        document.getElementById("auto-btn").addEventListener("click", () => {
+            const allButtons = Array.from(document.querySelectorAll(".btn"));
+            allButtons.forEach(btn => btn.classList.remove("on"));
+
+            const randomNumbers = [];
+            while (randomNumbers.length < 6) {
+                const randomNum = Math.floor(Math.random() * 45) + 1;
+                if (!randomNumbers.includes(randomNum)) {
+                    randomNumbers.push(randomNum);
+                }
+            }
+
+            randomNumbers.forEach(num => {
+                const button = allButtons.find(btn => parseInt(btn.textContent) === num);
+                if (button) button.classList.add("on");
+            });
+        });
+
+        // 로또 쿠폰 제출
+        document.getElementById("submit-btn").addEventListener("click", () => {
+            const selectedButtons = Array.from(document.querySelectorAll(".btn.on"));
+            const selectedNumbers = selectedButtons.map(btn => parseInt(btn.textContent));
+            const couponCode = document.getElementById("coupon-code").value.trim();
+            const youtubeHashtag = document.getElementById("youtube-hashtag").value.trim();
+
+            if (!couponCode || !youtubeHashtag) {
+                alert("쿠폰 코드와 유튜브 핸들을 입력해주세요.");
+                return;
+            }
+
+            if (selectedNumbers.length !== 6) {
+                alert("6개의 숫자를 선택해야 합니다.");
+                return;
+            }
+
+            fetch("/lotto/coupon/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ coupon_code: couponCode, youtube_hashtag: youtubeHashtag, selected_numbers: selectedNumbers })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("result").innerHTML = `<p>${data.message}</p>`;
+                    } else {
+                        document.getElementById("result").innerHTML = `<p class="error">${data.message}</p>`;
+                    }
+                })
+                .catch(err => {
+                    document.getElementById("result").innerHTML = `<p class="error">에러 발생: ${err.message}</p>`;
+                });
+        });
+
+        // "내 로또 추첨권 조회" 버튼 클릭 시 팝업 열기
+        document.getElementById("view-coupons-btn").addEventListener("click", () => {
+            document.getElementById("popupOverlay").style.display = "block";  // 배경 어두운 부분
+            document.getElementById("couponPopup").style.display = "block";  // 팝업창 표시
+
+            // 이전 데이터 초기화
+            document.querySelector("#coupon-uses-table tbody").innerHTML = "";
+            document.getElementById("hashtag-input").value = "";
+        });
+
+        // 팝업 외부 영역 클릭 시 팝업 닫기
+        document.getElementById("popupOverlay").addEventListener("click", () => {
+            document.getElementById("popupOverlay").style.display = "none";
+            document.getElementById("couponPopup").style.display = "none";
+        });
+
+        // 팝업 내부 클릭 시 닫기 방지
+        document.getElementById("couponPopup").addEventListener("click", (event) => {
+            event.stopPropagation();
+        });
+        function centerPopup() {
+            const popup = document.querySelector(".popup-container");
+            if (popup) {
+                popup.style.top = "50%";
+                popup.style.left = "50%";
+                popup.style.transform = "translate(-50%, -50%)";
+            }
+        }
+        // "쿠폰 조회" 버튼 클릭 시
+        document.getElementById("fetch-coupon-btn").addEventListener("click", () => {
+            const hashtagInput = document.getElementById("hashtag-input").value.trim();
+
+            if (!hashtagInput) {
+                alert("핸들값을 입력해주세요.");
+                return;
+            }
+
+            const encodedHashtag = encodeURIComponent(hashtagInput);
+
+            // 로딩 메시지 표시
+            const loadingMessage = document.getElementById("loading-message");
+            loadingMessage.style.display = "block";
+
+            fetch(`/lotto/coupon/lookup?hashtag=${encodedHashtag}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 로딩 메시지 숨김
+                    loadingMessage.style.display = "none";
+
+                    if (data.success) {
+                        const couponInfo = data.data;
+                        const usedCouponsCount = data.used_coupons_count || 0; // 안전한 기본값 설정
+                        const tableBody = document.querySelector("#coupon-uses-table tbody");
+
+                        // 해당 해시태그 사용된 쿠폰 수 업데이트
+                        document.getElementById("hashtag-coupon-count").textContent = usedCouponsCount;
+
+                        // 기존 데이터 지우기
+                        tableBody.innerHTML = "";
+
+                        // 새로운 데이터 추가
+                        couponInfo.forEach(coupon => {
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                                <td>${coupon.coupon_code || "없음"}</td>
+                                <td>${coupon.used_at || "정보 없음"}</td>
+                                <td>${coupon.selected_numbers.join(", ")}</td>
+                                <td>${coupon.draw_no || "정보 없음"}</td>
+                                <td>${coupon.draw_date || "정보 없음"}</td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                        centerPopup();
+                    } else {
+                        alert(data.message || "조회 실패");
+                    }
+                })
+                .catch(err => {
+                    // 로딩 메시지 숨김
+                    loadingMessage.style.display = "none";
+                    console.error("Error fetching data:", err);
+                    alert("조회 중 서버 오류가 발생했습니다. 다시 시도해주세요.");
+                });
+        });
+    </script>
+</body>
+</html>

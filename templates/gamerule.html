@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게임 방법</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='gamerule.css') }}">
+</head>
+<body>
+    
+    <div class="container">
+        <h1>게임 방법</h1>
+        <div>
+            <p>YouTube 속 숨겨진 쿠폰 코드를 찾아보세요!</p>
+            <img src="{{ url_for('static', filename='images/1.png') }}" alt="규칙 1 이미지">
+        </div>
+
+        <div>
+            <p>구독, 좋아요, 댓글 입력하고 내 유튜브 해시태그 확인!</p>
+            <img src="{{ url_for('static', filename='images/2.png') }}" alt="규칙 2 이미지">
+        </div>
+
+        <div>
+            <p>쿠폰 코드와 유튜브 핸들값을 입력하면 응모 완료!</p>
+            <img src="{{ url_for('static', filename='images/3.png') }}" alt="규칙 3 이미지">
+        </div>
+
+        <div>
+            <p>저런, 이미 누가 사용한 쿠폰 코드라고요?</p>
+            <p>실망하지 마세요! </p>
+            <p>아무도 사용하지 않은 쿠폰 코드 5개만 찾으면</p>
+            <p>이미 사용한 쿠폰 코드도 응모가 가능해요!</p>
+            <!-- 4.png는 건너뜁니다 -->
+        </div>
+
+        <div>
+            <p>쿠폰을 찾으면 찾을수록 당첨 범위 UP! 당첨 확률도 UP!</p>
+            <img src="{{ url_for('static', filename='images/5.png') }}" alt="규칙 5 이미지">
+        </div>
+
+        <a href="/lotto/coupon" class="back-button">돌아가기</a>
+    </div>
+        <div class="note">
+            <h2>유의사항</h2>
+            <ul>
+                <li>유튜브 구독, 좋아요, 댓글을 작성하기 이전에 응모한 쿠폰으로 당첨시 해당 당첨사실은 기각됩니다.</li>
+                <li>부정한 방법으로 획득한 쿠폰 등으로 응모시 당첨자격이 박탈될 수 있습니다.</li>
+                <li>본 쿠폰은 동행복권 로또6/45 당첨결과를 참고하지만, 동행복권과는 무관하며 당첨시 당첨금액은 동행복권 기준 1게임당 당첨금액의 1厘입니다.</li>
+                <li>쿠폰을 많이 사용할수록 당첨범위가 커지며, 해당 쿠폰의 당첨은 동행복권 기준 3등까지만 해당됩니다.</li>
+                <li>당첨시 당첨금은 표준 법령에 따라 제세공과금을 제외하고 지급됩니다.</li>
+                <li>당첨금 수령 가능 기간은 당첨일로부 30일이며, 수령 가능 기간을 초과하면 당첨 사실은 취소됩니다.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
