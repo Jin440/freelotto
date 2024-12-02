@@ -1,0 +1,6583 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="EUC-KR">
+<meta id="utitle" name="title" content="���ູ��">
+<meta id="desc" name="description" content="���ູ�� 1146ȸ ��÷��ȣ 6,11,17,19,40,43+28. 1�� �� 11��, 1�δ� ��÷�ݾ� 2,526,476,353��.">
+<title>�ζ�6/45 - ȸ���� ��÷��ȣ</title>
+<title>���ູ��</title>
+
+    
+    
+        
+
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<link rel="shortcut icon" href="/images/common/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/images/common/favicon.ico" type="image/x-icon">
+<script type="text/javascript" src="/js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/js/common.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+fn_g_init_message("");
+
+var gameUserId = "";
+
+function goGame(){
+	var userId = "";
+	
+	if(userId == '' || userId == null){
+		alert("�α��� �� ��� ���ֽñ� �ٶ��ϴ�.");
+		location.href = "/user.do?method=login";
+		return;
+	}
+	
+	$.ajax({
+		type:"get",                             // �޼ҵ�Ÿ��
+		url:"https://el.dhlottery.co.kr/portal_login.jsp",    // url
+		dataType:"jsonp",                       // �̺κ��� �߿� ����ŸŸ���� jsonP�� ����� ũ�ν��������� �̿��Ҽ� �ִ�.
+		jsonp : 'callback',                     // �ݹ��Լ� �̸� ���̴�. 
+		timeout:3000,
+		error: function() {                     // ��������� �ݹ��Լ�
+			alert('������ ��Ȱ���� �ʽ��ϴ�.'); 
+		}, 
+		success: function(data){        		// ���������� �ݹ��Լ�
+			
+			if(userId == data.userId && data.userId != ""){
+				doGamePopUp("");
+			}else{
+				alert("�α��� ������ ���� �Ǿ����ϴ�.\n�ٽ� �ѹ� �α����� �ֽñ� �ٶ��ϴ�.");
+				document.location.href = "/user.do?method=logout";
+			}
+	}});		
+}
+
+function goGame(lottoId,agreeType){
+	var userId = "";
+	if(userId == '' || userId == null){
+		alert("�α��� �� ��� ���ֽñ� �ٶ��ϴ�.");
+		location.href = "/user.do?method=login&returnUrl=" + encodeURIComponent('/gameInfo.do?method=lottoMainView&lottoId=' + lottoId);
+		return;
+	}
+	
+	$.ajax({
+		type:"get",                             // �޼ҵ�Ÿ��
+		url:"https://el.dhlottery.co.kr/portal_login.jsp",    // url
+		dataType:"jsonp",                       // �̺κ��� �߿� ����ŸŸ���� jsonP�� ����� ũ�ν��������� �̿��Ҽ� �ִ�.
+		jsonp : 'callback',                     // �ݹ��Լ� �̸� ���̴�. 
+		timeout:3000,
+		error: function() {                     // ��������� �ݹ��Լ�
+			alert("�ý����� ��Ȱ���� �ʽ��ϴ�.\n�̿뿡 ������ ��� �˼��մϴ�."); 
+		}, 
+		success: function(data){        		// ���������� �ݹ��Լ�
+			
+			if(userId == data.userId && data.userId != ""){
+				doGamePopUp(lottoId,agreeType);
+			}else{
+				alert("�α��� ������ ���� �Ǿ����ϴ�.\n�ٽ� �ѹ� �α����� �ֽñ� �ٶ��ϴ�.");
+				document.location.href = "/user.do?method=logout";
+			}
+	}});		
+}
+
+function goGamePnInfo(lottoId,agreeType,svcInfoPnPcMsgYn){
+	var svcInfoPnPcMsgYn = svcInfoPnPcMsgYn;
+
+	if (svcInfoPnPcMsgYn == "Y") {
+		svcInfoPnMsg();
+		return;
+	}
+	
+	var userId = "";
+	if(userId == '' || userId == null){
+		alert("�α��� �� ��� ���ֽñ� �ٶ��ϴ�.");
+		location.href = "/user.do?method=login&returnUrl=" + encodeURIComponent('/gameInfo.do?method=lottoMainView&lottoId=' + lottoId);
+		return;
+	}
+	
+	$.ajax({
+		type:"get",                             // �޼ҵ�Ÿ��
+		url:"https://el.dhlottery.co.kr/portal_login.jsp",  	// url
+		dataType:"jsonp",                       // �̺κ��� �߿� ����ŸŸ���� jsonP�� ����� ũ�ν��������� �̿��Ҽ� �ִ�.
+		jsonp : 'callback',                     // �ݹ��Լ� �̸� ���̴�. 
+		timeout:3000,
+		error: function() {                     // ��������� �ݹ��Լ�
+			alert("�ý����� ��Ȱ���� �ʽ��ϴ�.\n�̿뿡 ������ ��� �˼��մϴ�."); 
+		}, 
+		success: function(data){        		// ���������� �ݹ��Լ�
+			
+			if(userId == data.userId && data.userId != ""){
+				doGamePopUp(lottoId,agreeType);
+			}else{
+				alert("�α��� ������ ���� �Ǿ����ϴ�.\n�ٽ� �ѹ� �α����� �ֽñ� �ٶ��ϴ�.");
+				document.location.href = "/user.do?method=logout";
+			}
+	}});		
+}
+
+function goGameElInfo(lottoId,agreeType,svcInfoElPcMsgYn){
+	var lottoId = lottoId;
+	var svcInfoElPcMsgYn = svcInfoElPcMsgYn;
+
+	//2023������ ���� �ڵ� (ĳġ��,Ʈ�������� ��������� �߰����ڵ�.)
+	if("N" == "Y"){
+		if(lottoId == "LI23" || lottoId == "LI22" ) {
+			//LI23: ĳġ��,  LI22Ʈ��������
+			svcInfoElMsgEx();
+			return;
+		}
+	}
+	
+	if (svcInfoElPcMsgYn == "Y") {
+		if (lottoId == "LI21") {
+			svcInfoElTrMsg();
+			return;
+		} 
+		else if (lottoId == "LD11") {  //20241112 sicc_khj �ް����� �Ǹ�����.
+			svcInfoElMbMsg();
+			return;
+		} 
+		else {
+			svcInfoElMsg();
+			return;
+		}
+	}
+
+	var userId = "";
+	if(userId == '' || userId == null){
+		alert("�α��� �� ��� ���ֽñ� �ٶ��ϴ�.");
+		location.href = "/user.do?method=login&returnUrl=" + encodeURIComponent('/gameInfo.do?method=lottoMainView&lottoId=' + lottoId);
+		return;
+	}
+	
+	$.ajax({
+		type:"get",                             // �޼ҵ�Ÿ��
+		url:"https://el.dhlottery.co.kr/portal_login.jsp",  	// url
+		dataType:"jsonp",                       // �̺κ��� �߿� ����ŸŸ���� jsonP�� ����� ũ�ν��������� �̿��Ҽ� �ִ�.
+		jsonp : 'callback',                     // �ݹ��Լ� �̸� ���̴�. 
+		timeout:3000,
+		error: function() {                     // ��������� �ݹ��Լ�
+			alert("�ý����� ��Ȱ���� �ʽ��ϴ�.\n�̿뿡 ������ ��� �˼��մϴ�."); 
+		}, 
+		success: function(data){        		// ���������� �ݹ��Լ�
+			
+			if(userId == data.userId && data.userId != ""){
+				doGamePopUp(lottoId,agreeType);
+			}else{
+				alert("�α��� ������ ���� �Ǿ����ϴ�.\n�ٽ� �ѹ� �α����� �ֽñ� �ٶ��ϴ�.");
+				document.location.href = "/user.do?method=logout";
+			}
+	}});		
+}
+
+function goGameEnInfo(lottoId,agreeType,endInfoElPcMsgYn){
+	var endInfoElPcMsgYn = endInfoElPcMsgYn;
+
+	if (endInfoElPcMsgYn == "Y") {
+		endInfoElMsg();
+		return;
+	}
+	
+	var userId = "";
+	if(userId == '' || userId == null){
+		alert("�α��� �� ��� ���ֽñ� �ٶ��ϴ�.");
+		location.href = "/user.do?method=login&returnUrl=" + encodeURIComponent('/gameInfo.do?method=lottoMainView&lottoId=' + lottoId);
+		return;
+	}
+	
+	$.ajax({
+		type:"get",                             // �޼ҵ�Ÿ��
+		url:"https://el.dhlottery.co.kr/portal_login.jsp",  	// url
+		dataType:"jsonp",                       // �̺κ��� �߿� ����ŸŸ���� jsonP�� ����� ũ�ν��������� �̿��Ҽ� �ִ�.
+		jsonp : 'callback',                     // �ݹ��Լ� �̸� ���̴�. 
+		timeout:3000,
+		error: function() {                     // ��������� �ݹ��Լ�
+			alert("�ý����� ��Ȱ���� �ʽ��ϴ�.\n�̿뿡 ������ ��� �˼��մϴ�."); 
+		}, 
+		success: function(data){        		// ���������� �ݹ��Լ�
+			
+			if(userId == data.userId && data.userId != ""){
+				doGamePopUp(lottoId,agreeType);
+			}else{
+				alert("�α��� ������ ���� �Ǿ����ϴ�.\n�ٽ� �ѹ� �α����� �ֽñ� �ٶ��ϴ�.");
+				document.location.href = "/user.do?method=logout";
+			}
+	}});		
+}
+
+function goGameElEnInfo(lottoId,agreeType,svcInfoElPcMsgYn,endInfoElPcMsgYn){
+	var svcInfoElPcMsgYn = svcInfoElPcMsgYn;
+	var endInfoElPcMsgYn = endInfoElPcMsgYn;
+
+	//2023������ ���� �ڵ� (ĳġ��,Ʈ�������� ��������� �߰����ڵ�.)
+	if("N" == "Y"){
+		if(lottoId == "LI23" || lottoId == "LI22" ) {
+			//LI23: ĳġ��,  LI22Ʈ��������
+			svcInfoElMsgEx();
+			return;
+		}
+	}
+
+	if (svcInfoElPcMsgYn == "Y") {
+			svcInfoElMsg();
+			return;
+	}
+	
+	if (endInfoElPcMsgYn == "Y") {
+		endInfoElMsg();
+		return;
+	}
+	
+	var userId = "";
+	if(userId == '' || userId == null){
+		alert("�α��� �� ��� ���ֽñ� �ٶ��ϴ�.");
+		location.href = "/user.do?method=login&returnUrl=" + encodeURIComponent('/gameInfo.do?method=lottoMainView&lottoId=' + lottoId);
+		return;
+	}
+	
+	$.ajax({
+		type:"get",                             // �޼ҵ�Ÿ��
+		url:"https://el.dhlottery.co.kr/portal_login.jsp",  	// url
+		dataType:"jsonp",                       // �̺κ��� �߿� ����ŸŸ���� jsonP�� ����� ũ�ν��������� �̿��Ҽ� �ִ�.
+		jsonp : 'callback',                     // �ݹ��Լ� �̸� ���̴�. 
+		timeout:3000,
+		error: function() {                     // ��������� �ݹ��Լ�
+			alert("�ý����� ��Ȱ���� �ʽ��ϴ�.\n�̿뿡 ������ ��� �˼��մϴ�."); 
+		}, 
+		success: function(data){        		// ���������� �ݹ��Լ�
+			
+			if(userId == data.userId && data.userId != ""){
+				doGamePopUp(lottoId,agreeType);
+			}else{
+				alert("�α��� ������ ���� �Ǿ����ϴ�.\n�ٽ� �ѹ� �α����� �ֽñ� �ٶ��ϴ�.");
+				document.location.href = "/user.do?method=logout";
+			}
+	}});		
+}
+
+function doGamePopUp(lotid,agreeType){
+	/*
+	* ���ǵ�Ű�� LD10, �ް����� LD11, �����踶�̴��� LD20, �Ŀ��� LD14, Ʈ�������� LI22, Ʈ���÷� LI21 -> gamePop
+	* ĳġ�� LI23 -> catchPop
+	*/
+	var type;
+	
+	if( lotid === 'LI23' ){
+		type = 'catchPop';
+	}else{
+		type = 'gamePop';
+	}
+		
+	if($("#agreeChk").is(":checked") || agreeType == 2){
+		var new_popup = centerPop('https://el.dhlottery.co.kr/game/TotalGame.jsp?LottoId='+ lotid, 'type', 1164, 645, 'no');
+	}else{
+		alert('����� ������ �ּž� �̿��� �����մϴ�.');
+		$("#agreeChk").focus();
+	}
+	
+}
+
+//�������� �˾�
+function popCenter(url){
+	var new_popup =	centerPop(url, '��������', 480, 800, 'yes');
+}
+
+//���ð��� �˾�
+function sample_pop(code, userId){
+	
+	//location.href = "/gamezone.do?method=gameZoneMainView";
+	//return;
+	if(userId == null || userId == ""){
+		alert("�α��� �� �̿��� �����մϴ�.");
+		//location.href = "/user.do?method=login";
+		//location.href = "/user.do?method=login&returnUrl=/gamezone.do?method=gameZoneMainView";
+		location.href = "/user.do?method=login&returnUrl=" + encodeURIComponent('/gameInfo.do?method=lottoMainView&lottoId=' + code);
+		return;
+	}
+	if(!$("#sampleAgreeChk").is(":checked")){
+		alert('����� ������ �ּž� �̿��� �����մϴ�.');
+		$("#sampleAgreeChk").focus();
+		return;
+	}
+	
+	$.ajax({
+		type:"POST",                            // �޼ҵ�Ÿ��
+		url:"/gamezone.do?method=autoAgreeProc",// url
+		dataType:"json",                        // �̺κ��� �߿� ����ŸŸ���� jsonP�� ����� ũ�ν��������� �̿��Ҽ� �ִ�.
+		timeout:3000,
+		async:false,
+		contentType : "application/json; charset=EUC-KR",
+		error: function() {                     // ��������� �ݹ��Լ�
+			console.log("error");
+		}, 
+		success: function(data){        		// ���������� �ݹ��Լ�
+			if(data.successYn){
+				console.log(data);
+			}
+		}
+	});
+	
+	$.ajax({
+		type:"get",                             // �޼ҵ�Ÿ��
+		url:"https://el.dhlottery.co.kr/portal_login.jsp",    // url
+		//data:{"jackpot":strJackpotData},   	// �Ķ���� Ÿ��
+		dataType:"jsonp",                       // �̺κ��� �߿� ����ŸŸ���� jsonP�� ����� ũ�ν��������� �̿��Ҽ� �ִ�.
+		timeout:3000,
+		jsonp : 'callback',                     // �ݹ��Լ� �̸� ���̴�. 
+		error: function() {                     // ��������� �ݹ��Լ�
+			alert("�ý����� ��Ȱ���� �ʽ��ϴ�.\n�̿뿡 ������ ��� �˼��մϴ�."); 
+		}, 
+		success: function(data){        		// ���������� �ݹ��Լ�
+			if(userId == data.userId && data.userId != ""){
+				var new_popup =	centerPop('https://el.dhlottery.co.kr/game_sample/TotalGame.jsp?LottoId=' + code, 'gamePop', 1164, 645, 'no');
+			}else{
+				alert("�α��� ������ ���� �Ǿ����ϴ�.\n�ٽ� �ѹ� �α����� �ֽñ� �ٶ��ϴ�.");
+				document.location.href = "/user.do?method=logout";
+			}
+	}});
+}
+
+//���ð���(����) �˾�
+function sample_random_pop(userId){
+	
+	//location.href = "/gamezone.do?method=gameZoneMainView";
+	//return;
+	if(userId == null || userId == ""){
+		alert("�α��� �� �̿��� �����մϴ�.");
+		location.href = "/user.do?method=login";
+// 		location.href = "/user.do?method=login&returnUrl=/gamezone.do?method=gameZoneMainView";
+// 		location.href = "/common.do?method=main";
+		return;
+	}
+	
+	var x = Math.floor((Math.random() * 7) + 1 );
+	
+	if(x == 1){
+		var code = "LD14";
+	}else if(x == 2){
+		var code = "LD10";
+	}else if(x == 3){
+		var code = "LD20";
+	}else if(x == 4){
+		var code = "LI23";
+	}else if(x == 5){
+		var code = "LI22";
+	}else if(x == 6){
+		var code = "LI21";
+	}else if(x == 7){
+		var code = "LD11";
+	}
+	
+	$.ajax({
+		type:"get",                             // �޼ҵ�Ÿ��
+		url:"/gamezone.do?method=autoAgreeProc",// url
+		dataType:"json",                        // �̺κ��� �߿� ����ŸŸ���� jsonP�� ����� ũ�ν��������� �̿��Ҽ� �ִ�.
+		timeout:3000,
+		async:false,
+		contentType : "application/json; charset=EUC-KR",
+		error: function() {                     // ��������� �ݹ��Լ�
+			console.log("error");
+		}, 
+		success: function(data){        		// ���������� �ݹ��Լ�
+			if(data.successYn){
+				console.log(data);
+			}
+		}
+	});
+	
+	$.ajax({
+		type:"get",                             // �޼ҵ�Ÿ��
+		url:"https://el.dhlottery.co.kr/portal_login.jsp",    // url
+		//data:{"jackpot":strJackpotData},   	// �Ķ���� Ÿ��
+		dataType:"jsonp",                       // �̺κ��� �߿� ����ŸŸ���� jsonP�� ����� ũ�ν��������� �̿��Ҽ� �ִ�.
+		timeout:3000,
+		jsonp : 'callback',                     // �ݹ��Լ� �̸� ���̴�. 
+		error: function() {                     // ��������� �ݹ��Լ�
+			alert("�ý����� ��Ȱ���� �ʽ��ϴ�.\n�̿뿡 ������ ��� �˼��մϴ�."); 
+		}, 
+		success: function(data){        		// ���������� �ݹ��Լ�
+			if(userId == data.userId && data.userId != ""){
+				var new_popup =	centerPop('https://el.dhlottery.co.kr/game_sample/TotalGame.jsp?LottoId=' + code , 'gamePop', 1164, 645, 'no');
+			}else{
+				alert("�α��� ������ ���� �Ǿ����ϴ�.\n�ٽ� �ѹ� �α����� �ֽñ� �ٶ��ϴ�.");
+				document.location.href = "/user.do?method=logout";
+			}
+	}});
+}
+
+
+
+function doReserve(){	
+	var userId = "";
+	
+	if(userId == '' || userId == null){
+		alert("�α��� �� ��� ���ֽñ� �ٶ��ϴ�.");
+		//location.href = "/user.do?method=login";
+		location.href = "/user.do?method=login&returnUrl=/gameInfo.do?method=game720Method";
+		return;
+	}
+	
+	$.ajax({
+		type:"get",                             // �޼ҵ�Ÿ��
+		url:"https://el.dhlottery.co.kr/portal_login.jsp",    // url
+		dataType:"jsonp",                       // �̺κ��� �߿� ����ŸŸ���� jsonP�� ����� ũ�ν��������� �̿��Ҽ� �ִ�.
+		timeout:3000,
+		jsonp : 'callback',                     // �ݹ��Լ� �̸� ���̴�. 
+		error: function() {                     // ��������� �ݹ��Լ�
+			alert("�ý����� ��Ȱ���� �ʽ��ϴ�.\n�̿뿡 ������ ��� �˼��մϴ�."); 
+		}, 
+		success: function(data){        		// ���������� �ݹ��Լ�
+			if(userId == data.userId && data.userId != ""){
+					window.open('https://el.dhlottery.co.kr/lotto720.do?method=reserveBuy', 'pensionPop' , 'width=930, height=672, left=0, top=0, status=no, toolbar=no, menubar=no, location=no');				
+			}else{
+				alert("�α��� ������ ���� �Ǿ����ϴ�.\n�ٽ� �ѹ� �α����� �ֽñ� �ٶ��ϴ�.");
+				document.location.href = "/user.do?method=logout";
+			}
+	}});
+				
+}
+
+
+function jackpotViewPop(){
+	var url = "/gameInfo.do?method=jackpotView&lottoId=";	
+	commonPop("", url, 820, 700, 'yes');
+}
+
+function goLottoBuy(agreeType){
+	var userId = "";
+	
+	if(userId == '' || userId == null){
+		alert("�α��� �� ��� ���ֽñ� �ٶ��ϴ�.");
+		//location.href = "/user.do?method=login";
+		location.href = "/user.do?method=login&returnUrl=/gameInfo.do?method=buyLotto";
+		return;
+	}
+	if(agreeType == 1 && !$("#agreeChk").is(":checked")){
+		alert('����� ������ �ּž� �̿��� �����մϴ�.');
+		$("#agreeChk").focus();
+		return;
+	}
+	
+	
+	 $.ajax({
+		type:"get",                             // �޼ҵ�Ÿ��
+		url:"https://el.dhlottery.co.kr/portal_login.jsp",    // url
+		dataType:"jsonp",                       // �̺κ��� �߿� ����ŸŸ���� jsonP�� ����� ũ�ν��������� �̿��Ҽ� �ִ�.
+		timeout:3000,
+		jsonp : 'callback',                     // �ݹ��Լ� �̸� ���̴�. 
+		error: function() {                     // ��������� �ݹ��Լ�
+			alert("�ý����� ��Ȱ���� �ʽ��ϴ�.\n�̿뿡 ������ ��� �˼��մϴ�."); 
+		}, 
+		success: function(data){        		// ���������� �ݹ��Լ�
+			if(userId == data.userId && data.userId != ""){
+				var new_popup = centerPop('https://el.dhlottery.co.kr/game/TotalGame.jsp?LottoId=LO40', 'gamePop', 1164, 645, 'no');			
+			}else{
+				alert("�α��� ������ ���� �Ǿ����ϴ�.\n�ٽ� �ѹ� �α����� �ֽñ� �ٶ��ϴ�.");
+				document.location.href = "/user.do?method=logout";
+			}
+	}});
+				
+}
+
+function loginType(pageCode){
+	var userId = "";
+	var pageCodes = pageCode.split("-");
+}
+
+//���͸� ġ�� �α���
+function enter_check_top(eventValue) {
+	if (eventValue == 13) {
+		check_if_Valid_top();
+		return;
+	}
+}
+
+function depositAlert(){
+	alert("12�� 2�� ���ĺ��� ��� �����մϴ�.");
+}
+
+function check_if_Valid_top() {
+	var f = document.frmLogin;
+	
+	if (f.userId.value == "") {
+		alert("���̵� �Է��� �ֽʽÿ�");
+		f.userId.focus();
+		return;
+	}
+	if (f.password.value == "") {
+		alert("��й�ȣ�� �Է��� �ּ���");
+		f.password.focus();
+		return;
+	}
+	if (f.userId.value.length >= 15) {
+		alert("���̵� �ڸ����� �ʰ��Ǿ����ϴ�.");
+		return;
+	}
+	if (f.password.value.length >= 101) {
+		alert("��й�ȣ�� �ڸ����� �ʰ��Ǿ����ϴ�.");
+		return;
+	}
+	loginpage_top();
+}
+
+function loginpage_top(){
+	
+	var f = window.document.frmLogin;
+	var pageUrl = document.location.href;
+	var returnUrl="";
+	
+	f.method = "post";
+	//f.target = "jform";
+	if(returnUrl != ''){
+		f.action = "https://www.dhlottery.co.kr/userSsl.do?method=login&returnUrl="+encodeURIComponent(returnUrl);
+	}else{
+		f.action = "https://www.dhlottery.co.kr/userSsl.do?method=login&returnUrl="+encodeURIComponent(pageUrl);
+	}
+	f.submit();
+
+}
+
+function getCookie(uName) {
+	var flag = document.cookie.indexOf(uName + '=');
+	if (flag != -1) {
+		flag += uName.length + 1;
+		end = document.cookie.indexOf(';', flag);
+		if (end == -1)
+			end = document.cookie.length;
+		return unescape(document.cookie.substring(flag, end));
+	}
+}
+
+function gomain() {
+	location.href="/common.do?method=main";
+}
+
+$(document).ready(function() {
+	$("#phoneTopMenu").html("");
+	
+	if(getCookie("userId") != undefined) 
+	{
+		$('.top_userid').val(getCookie("userId"));
+	}
+	
+});
+
+function svcInfoPnMsg() {
+	alert("�Ͻ� �Ǹ����� ���Դϴ�.\n\n���� �Ͻ� : 2023�� 12�� 31�� 09��\n�簳 �Ͻ� : 2024�� 01�� 02�� 10��");
+}
+
+
+function svcInfoElMsg() {
+	alert("�Ͻ� �Ǹ����� ���Դϴ�.\n\n���� �Ͻ� : 2023�� 12�� 31�� 09��\n�簳 �Ͻ� : 2024�� 01�� 02�� 10��");
+}
+
+//�������� �޽���
+function svcInfoElMsgEx() {
+	alert("�Ͻ� �Ǹ����� ���Դϴ�.\n\n���� �Ͻ� : 2023�� 12�� 05�� 00��\n�簳 �Ͻ� : 2024�� 01�� 02�� 10��");
+}
+
+//20241112 sicc_khj �ް����� �Ǹ�����.
+function svcInfoElMbMsg() {
+	alert("�ް����� ������ �Ǹ����� �մϴ�.\n\n�Ǹ����� �Ͻ� : 2024�� 11�� 13�� 00�� \n�Ǹ��簳 �Ͻ� : 2025�� 01�� 02�� ");	
+}
+
+//25ȸ�� ����	
+function svcInfoElTrMsg() {
+	alert("Ʈ���÷� ������ �Ǹ� ���� ���Դϴ�.\n\n�����Ͻ� : 2024�� 11�� 04�� 17�� \n�簳 �Ͻ� : 2024�� 11�� 05�� 06�� ");
+}
+
+function endInfoElMsg() {
+	alert("�ǸŽð��� �ƴմϴ�.\n\n�Ǹ� �ð� : 06�� ~ 24��");
+}
+
+</script>
+<!-- <link rel="stylesheet" type="text/css" href="/css/nanum_gothic_dev.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/styles.css">
+<script type="text/javascript" src="/js/function.js" charset="utf-8"></script>
+<script type="text/javascript" src="/js/InsertFlash.js" charset="utf-8"></script>
+<script type="text/javascript" src="/js/link.js" charset="utf-8"></script>
+<script type="text/javascript" src="/js/makePCookie.js" charset="utf-8"></script>
+<script type="text/javascript" src="/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/js/webfont.js"></script>
+<script>
+if (navigator.platform && /win16|win32|win64|mac/ig.test(navigator.platform) == false) {
+	if ('https://m.dhlottery.co.kr'.indexOf(location.hostname) == -1 || 'https://m.dhlottery.co.kr'.indexOf(location.hostname) == -1 ) {
+	  	location.href = 'https://m.dhlottery.co.kr';
+	}
+}
+</script>
+    
+
+<script>
+var pageCode = "03-01-01";
+var pageName = "ȸ���� ��÷��ȣ";
+
+var hdrw = 1;
+function search() {
+	$('#drwNo').val($("#dwrNoList").val());
+	$("#frm").attr({action:"/gameResult.do?method=byWin", method:"post"}).submit();
+}
+
+$(document).ready(function() {
+
+	if("1146" != ""){
+		$("#dwrNoList").val("1146");
+		if ("1146" < 601) hdrw = 2;
+	}
+	$('#searchBtn').click(function(e) {
+		search();
+	});
+	$('#printBtn').click(function(e) {
+		e.preventDefault();
+		commonPop("stat_pop", "/gameResult.do?method=allWinPrint&gubun=byWin&nowPage="+$("#nowPage").val()+"&drwNoStart="+$("#drwNoStart").val()+"&drwNoEnd="+$("#drwNoEnd").val(), "800", "750", "");
+	});
+	$('#exelBtn').click(function(e) {
+		var search1 = $("#drwNoStart").val();
+		var search2 = $("#drwNoEnd").val();
+		if(parseInt(search2) < parseInt(search1)){
+			alert("����ȸ���� ����ȸ������ Ů�ϴ�.");
+			$('#drwNoEnd').focus();
+			return false;
+		};
+		location.href = "/gameResult.do?method=allWinExel&gubun=byWin&nowPage="+$("#nowPage").val()+"&drwNoStart="+$("#drwNoStart").val()+"&drwNoEnd="+$("#drwNoEnd").val();
+	});
+	$('#hdrwComb').click(function(e) {
+		if($('#hdrwComb').val() != hdrw) {
+			hdrw = $('#hdrwComb').val();
+			$("#dwrNoList").empty();
+			$("#drwNoStart").empty();
+			$("#drwNoEnd").empty();
+			var str = "";
+			
+			if(hdrw == 1) {
+				for (var i="1146"; i>600; i--) {
+					str += "<option value=" + i;
+					if(i == "1146") {
+						str += " seleted";
+					}
+					str += " >" + i + "</option>"
+				}
+			} else {
+				for (var i=600; i>0; i--) {
+					str += "<option value=" + i;
+					if(i == "1146") {
+						str += " seleted";
+					}
+					str += " >" + i + "</option>"
+				}
+			}
+			$("#dwrNoList").append(str);
+			$("#drwNoStart").append(str);
+			$("#drwNoEnd").append(str);
+		}
+	}); 
+});
+</script>
+</head>
+<body>
+
+    
+    
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+
+	
+		
+		
+			
+<script type="text/javascript">
+	$(document).ready(function(){
+		var curPage = document.location.href;
+		var mainBannerUrl = "/common.do?method=getMainBannerList";
+		
+		if(curPage.indexOf("https") > -1){
+			mainBannerUrl = "/userSsl.do?method=getMainBannerList";
+		}
+
+		$.ajax({
+			type: 'POST',
+		    url: mainBannerUrl,
+		    data : "",
+		    dataType    :'json',
+		    async:false,
+			success : function(data) { // ���������� �ݹ��Լ�
+				var mainBanner = "";
+				
+				if(data.returnValue == "fail"){
+					//alert("������� ��ʰ� �����ϴ�.");
+					return;
+				}
+				
+				if (data.mainBannerList == null || data.mainBannerList == "") {
+					mainBanner = "";
+				} else {
+					for(var i=0; i<data.mainBannerList.length ; i++) {
+						mainBanner += "<div class='band_banner' style='background:"+data.mainBannerList[i].bgColor+"';>";
+						/* mainBanner += "<div class='band_banner' style='background:#e0e6f4';>"; */
+						mainBanner += "<div class='inner_band_banner' ;>";
+						mainBanner += "<a href='"+data.mainBannerList[i].link+"' target='"+data.mainBannerList[i].target+"' class='img_banner'>"
+						mainBanner += "<img src='/img/event/main_banner/"+data.mainBannerList[i].physclFileNm+"'></a>";
+						/* mainBanner += "<img src='/images/event/main_banner/pc_banner.png'></a>"; */
+						mainBanner += "<a class='btn_close' href='javascript:today_close_popup();'>�Ϸ� ���� ���� �ʱ�</a>";
+						mainBanner += "</div>";
+						mainBanner += "</div>";
+					}
+				}
+
+				$("#band_banner").html(mainBanner);
+			},
+			error : function(data) {
+				//alert("������� ��ʰ� �����ϴ�.");
+			}
+		});
+		
+		var banner = $(".slider > li"),
+			bannerLength = banner.length,
+			targetNum = 0, //������ ����
+			currentNum = 0, //���������ִ� ����
+			speed = 400, //�ִϸ���Ʈ �ӵ�
+			delay = 5000, //���Ÿ��
+			isPlay = true, //�ڵ�������϶� true
+			isTween = false; //false�϶��� �̵�����
+
+		function initBanner(){
+			if(bannerLength > 1){//��ʰ� �ΰ� �̻��϶��� �����̵����
+				bnrSlide();
+			}
+			todayCookie();//��Ű����
+		}
+
+		function bnrSlide(){
+			banner.not(":first").hide();
+			timer = setInterval(nextMove, delay); //���͹�
+
+			//������ Ŭ��
+			$(".icon_count a").on("click", function(e){
+				e.preventDefault();
+				clearInterval(timer);
+				var iconIdx = $(this).index();
+				if(iconIdx == currentNum){
+					if(isPlay == true){
+						timer = setInterval(nextMove, delay);
+					} else {
+						return;
+					}
+
+				} else {
+					bannerMove(iconIdx);
+				}
+			});
+
+			//stop Ŭ��
+			$(".play_stop .stop").on("click", function(e){
+				e.preventDefault();
+				clearInterval(timer);
+				$(this).hide();
+				$(".play_stop .play").show();
+				isPlay = false;
+			});
+
+			//play Ŭ��
+			$(".play_stop .play").on("click", function(e){
+				e.preventDefault();
+				timer = setInterval(nextMove, delay);
+				$(this).hide();
+				$(".play_stop .stop").show();
+				isPlay = true;
+			});
+
+			function nextMove(){
+				targetNum = currentNum +1;
+				if(targetNum >= bannerLength){
+					targetNum = 0;
+				}
+				bannerMove(targetNum);
+			}
+
+			function bannerMove(idx){
+				if(isTween){return;}
+				isTween = true; //�̵��Ұ�
+				iconReplace(idx);
+
+				banner.eq(currentNum).css("z-index", 0);
+				banner.eq(idx).css("z-index", 1).fadeIn(speed, function(){
+					banner.eq(currentNum).hide();
+					tweenComplete(idx);
+				});
+			}
+
+			//������ ���÷��̽�
+			function iconReplace(idx){
+				$(".icon_count a").removeClass("on");
+				$(".icon_count a").eq(idx).addClass("on");
+			}
+
+			//�ִϸ���Ʈ �Ϸ�
+			function tweenComplete(idx){
+				currentNum = idx;
+				isTween = false;
+				if(isPlay){
+					if(timer)clearInterval(timer);
+					timer = setInterval(nextMove, delay);
+				}
+			}
+		}
+
+		function todayCookie(){
+			var banner_cookie = $.cookie('cookie');
+
+			if(banner_cookie == undefined){//��Ű��������
+				$(".top_banner_wrap").show();//�˾� ����
+
+				$(".btn_top_bnr_close").on("click", function(e){//�˾� �ݱ� Ŭ��
+					e.preventDefault();
+
+					if($("#today").is(":checked")){
+						$.cookie('cookie', 'today', {expires: 1, page:'/'});//���θ� ��Ű 1�� ����
+						$(".top_banner_wrap").slideUp(400);
+					} else {
+						$(".top_banner_wrap").slideUp(400);
+					}
+				});
+			}
+		}
+
+		initBanner();
+		
+		if( $.cookie("show_popup") == "false" ) {
+			close_popup();
+		} else {
+			$("#band_banner").show();
+		}
+	});
+	
+	function close_popup() {
+		$("#band_banner").hide();
+	}
+	
+	function today_close_popup() {
+		today = new Date();
+		$.cookie( "show_popup", "false", { path: "/", expires : 1 } );
+		close_popup();
+	}
+</script>
+<ul id="skipnavigation">
+	<li><a href="#article">���� �ٷΰ���</a></li>
+</ul>
+
+<header class="topHeader">
+	<!-- ��� -->
+	<div id="band_banner"></div>
+
+	<div class="header_con">
+	   	<div class="logo">
+			<h1><a href="/common.do?method=main">���ູ��</a></h1>
+	    </div>
+		<div class="top_menu">
+			
+<script type="text/javascript" src="/js/link.js" charset="utf-8"></script>
+<form name="frmLogin">
+	<div class="topAccount">
+	
+		
+		
+			<ul class="account">
+				<li class="log"><a class="btn_common sml" href="/user.do?method=login&returnUrl=">�α���</a></li>
+				<li class="devide"><a class="btn_common sml blu" href="/loginJoin.do?method=joinFormAgree">ȸ������</a></li>
+				<li><a class="btn_common sml gblu" href="/userSsl.do?method=myPage">����������</a></li>
+				<li><a class="btn_common sml gblu" href="/counsel.do?method=callCenter">��������</a></li>
+			</ul>
+		
+	
+</div>
+</form>
+
+
+
+
+
+
+		</div>
+	</div>
+</header>
+		
+	
+</div>
+
+
+
+
+	
+	
+		<div class="nav_wrap" style="z-index:999;">
+			<nav class="gnbNav">
+				
+	<div id="gnb" class="gnb">
+        <ul>
+            <!-- <li class="gnb1"><a href="/gameBuy.do?method=gameBuyHome"></a></li> -->
+            <li class="gnb1"><a href="javascript:void(0)">���Ǳ���</a>
+            	<div class="group">
+	            	<ul>
+	            		<li class="gnb1_1"><a href="javascript:goLottoBuy(2);" title="��â ����" onclick="javascript:goWiseLogMain('');"><strong>�ζ� 6/45</strong><span>���� ����� ��÷<br>6�� ���� ���� ����</span></a></li>
+	            		<li class="gnb1_5"><a href="javascript:goGameElInfo('LI21',2,'N');" title="Ʈ���÷�" onclick="javascript:goWiseLogMain('');"><strong>Ʈ���÷�</strong><span>�ѹ��� 3����! 1�� 5���<br>�Ｎ�� �ܴ� ����</span></a></li>
+	            		<li class="gnb1_9"><a href="javascript:goGameElInfo('LD20',2,'N');" title="�����踶�̴���" onclick="javascript:goWiseLogMain('');"><strong>�����踶�̴���</strong><span>���� �׸��� ������ ��÷<br>������� ��÷Ȯ��</span></a></li>
+	            		<li class="gnb1_8"><a href="javascript:goGameElInfo('LI23',2,'N');" title="ĳġ��" onclick="javascript:goWiseLogMain('');"><strong>ĳġ��</strong><span>��÷�� x 5�� ���ð���<br>���ʽ� ���� ��ȸ��~</span></a></li>
+	            		<li class="gnb1_7"><a href="javascript:goGameElInfo('LI22',2,'N');" title="Ʈ��������" onclick="javascript:goWiseLogMain('');"><strong>Ʈ��������</strong><span>�հ��� 5�� ������ 1��<br>�ɺ���ġ�� �Ｎ����</span></a></li>
+	            		<li class="gnb1_6"><a href="javascript:goGamePnInfo('LP72',2,'N');" title="���ݺ���720+" onclick="javascript:goWiseLogMain('');"><strong>���ݺ���720+</strong><span>���� ����� ��÷<br>700������ 20�� ����</span></a></li>
+	            		<li class="gnb1_2"><a href="javascript:goGameElEnInfo('LD14',2,'N','Y');" title="�Ŀ���" onclick="javascript:goWiseLogMain('');"><strong>�Ŀ���</strong><span>5�и��� ��÷<br>�ְ���÷�� 3���</span></a></li>
+	            		<li class="gnb1_3"><a href="javascript:goGameElEnInfo('LD10',2,'N','Y');" title="���ǵ�Ű��" onclick="javascript:goWiseLogMain('');"><strong>���ǵ�Ű��</strong><span>5�и��� ��÷<br>���� 10�� ��ġ�� 1��</span></a></li>
+	            		<li class="gnb1_4"><a href="javascript:goGameElInfo('LD11',2,'Y');" title="�ް�����" onclick="javascript:goWiseLogMain('');"><strong>�ް�����</strong><span>8�и��� ��÷<br>���� ���� ��÷Ȯ��</span></a></li>
+	            		<!-- 20241112 sicc_khj �ް����� �Ǹ�����. -->
+	            		<!-- <li class="gnb1_4"><a href="javascript:goGameElEnInfo('LD11',2,'N','Y');" title="�ް�����" onclick="javascript:goWiseLogMain('');"><strong>�ް�����</strong><span>8�и��� ��÷<br>���� ���� ��÷Ȯ��</span></a></li> -->
+	            		<li class="gnb1_10"><a href="javascript:sample_random_pop('');" title="���ð���" onclick="javascript:goWiseLogMain('');"><span>���ð��� <br>�غ���</span></a></li>
+	            	</ul>
+            	</div>
+            </li>
+            <li class="basic gnb2"><a href="/gameInfo.do?method=gameMethod">��������</a>
+            	<div class="group">
+	            	<ul>
+	            		<li><a href="/gameInfo.do?method=gameMethod">�ζ�6/45</a>
+		               		<ul class="snb_dep3">
+		               			<li><a href="/gameInfo.do?method=gameMethod">�ζ� 6/45 �Ұ�</a></li>
+		               		 	<li><a href="/gameInfo.do?method=buyLotto">�����ϱ�</a></li>
+		                   		<li><a href="/gameInfo.do?method=buyInfo">���Ź��</a></li>
+		                   		<li><a href="/gameInfo.do?method=lotMethod">��÷�ȳ�</a></li>
+		                   		<li><a href="/gameInfo.do?method=statHistory">�ζ� �����丮</a></li>
+	                		</ul>
+	                	</li>
+	                	
+	                	<li><a href="/gameInfo.do?method=game720Guide">���ݺ���720+</a>
+	                  		<ul class="snb_dep3">
+	                  			<li><a href="/gameInfo.do?method=game720Guide">���ݺ���720+ �Ұ�</a></li>
+	                      		<li><a href="/gameInfo.do?method=game720Method">�����ϱ�</a></li>
+	                      		<li><a href="/gameInfo.do?method=game720Info">���Ź��</a></li>
+	                      		<li><a href="/gameInfo.do?method=game720lotInfo">��÷�ȳ�</a></li>
+	                   		</ul>
+	                	</li>
+	                	<li><a href="/gameInfo.do?method=inetbokBuyInfo">���ں���</a>
+	               			<ul class="snb_dep3">
+								<li><a href="/gameInfo.do?method=inetbokBuyInfo">���Ӿȳ�</a></li>
+								<li><a href="/gameInfo.do?method=lottoMainView&lottoId=LD14">�Ŀ���</a></li>
+								<li><a href="/gameInfo.do?method=lottoMainView&lottoId=LD10">���ǵ�Ű��</a></li>
+								<li><a href="/gameInfo.do?method=lottoMainView&lottoId=LD11">�ް�����</a></li>
+								<li><a href="/gameInfo.do?method=lottoMainView&lottoId=LI21">Ʈ���÷�</a></li>
+								<li><a href="/gameInfo.do?method=lottoMainView&lottoId=LI22">Ʈ��������</a></li>
+								<li><a href="/gameInfo.do?method=lottoMainView&lottoId=LD20">�����踶�̴���</a></li>
+								<li><a href="/gameInfo.do?method=lottoMainView&lottoId=LI23">ĳġ��</a></li>
+							</ul>
+	                	</li>
+	                	<li><a href="/gameInfo.do?method=speettoGameMethod">�Ｎ���μ⺹��</a>
+							<ul class="snb_dep3">
+								<li><a href="/gameInfo.do?method=speettoGameMethod">�Ｎ���μ⺹�� �Ұ�</a></li>
+								<li><a href="/gameInfo.do?method=speetto500">���Ƕ� 500</a></li>
+								<li><a href="/gameInfo.do?method=speetto1000">���Ƕ� 1000</a></li>
+								<li><a href="/gameInfo.do?method=speetto2000">���Ƕ� 2000</a></li>
+							</ul>
+	                	</li>
+	            	</ul>
+            	</div>
+            </li>
+            <li class="basic gnb3"><a href="/gameResult.do?method=byWin">��÷���</a>
+            	<div class="group">
+	            	<ul>
+	            		<li><a href="/gameResult.do?method=byWin">�ζ�6/45</a>
+							<ul class="snb_dep3">
+								<li><a href="/gameResult.do?method=byWin">ȸ���� ��÷��ȣ</a></li>
+								<li><a href="/gameResult.do?method=myWin">����ȣ ��÷Ȯ��</a></li>
+								<li><a href="/gameResult.do?method=allWin">��÷����</a></li>
+								<li><a href="/gameResult.do?method=locInfo645">��÷�� ���޾ȳ�</a></li>
+								<li><a href="/gameResult.do?method=lotTv">��÷��� �ٽú���</a></li>
+								<li><a href="/gameResult.do?method=visitWinList">��÷��� ������û</a></li>
+							</ul>
+	            		</li>
+	            		
+	            		<li><a href="/gameResult.do?method=win720">���ݺ���720+</a>
+							<ul class="snb_dep3">
+								<li><a href="/gameResult.do?method=win720">ȸ���� ��÷��ȣ</a></li>
+								<li><a href="/gameResult.do?method=myWin720">����ȣ ��÷Ȯ��</a></li>
+								<li><a href="/gameResult.do?method=winResult720">��÷����</a></li>
+								<li><a href="/gameResult.do?method=locInfo720">��÷�� ���޾ȳ�</a></li>
+								<li><a href="/gameResult.do?method=lotInfo720">��÷��� �ٽú���</a></li>
+								<li><a href="/gameResult.do?method=visitWinList&tabGbn=2">��÷��� ������û</a></li>
+							</ul>
+	            		</li>
+	            		<li><a href="/gameResult.do?method=winList">���ں���</a></li>
+	            		<li><a href="/gameResult.do?method=speettoWin">�Ｎ���μ⺹��</a>
+							<ul class="snb_dep3">
+								<li><a href="/gameResult.do?method=speettoWin">��÷����</a></li>
+								<li><a href="/gameResult.do?method=speettoLotInfo">��÷�� ���޾ȳ�</a></li>
+							</ul>
+	            		</li>
+	            		<li><a href="/gameResult.do?method=statIndex">�ζ�6/45 ��÷���</a>
+							<ul class="snb_dep3">
+								<li><a href="/gameResult.do?method=statIndex">��÷���</a></li>
+								<li><a href="/gameResult.do?method=statByNumber">��ȣ�� ���</a></li>
+								<li><a href="/gameResult.do?method=statByColor">���� ���</a></li>
+								<li><a href="/gameResult.do?method=statGroupNum">������ ����Ƚ��</a></li>
+								<li><a href="/gameResult.do?method=noViewNumber">�Ⱓ�� ������ ��ȣ</a></li>
+								<li><a href="/gameResult.do?method=statOddEven">Ȧ¦���</a></li>
+								<li><a href="/gameResult.do?method=statConsNumber">���ӹ�ȣ ����</a></li>
+								<!-- <li><a href="/gameResult.do?method=statPattern">���Ϻм�ǥ</a></li> -->
+							</ul>
+	            		</li>
+	            	</ul>
+	            	<ul>
+	            		
+	            		<li><a href="/gameResult.do?method=index720" class="show_font1">���ݺ���720+ ��÷���</a></li>
+	            		<li><a href="/gameResult.do?method=highWin">��÷�ҽ�</a>
+							<ul class="snb_dep3">
+								<li><a href="/gameResult.do?method=highWin">��÷�� ���ͺ�</a></li>
+								<li><a href="/gameResult.do?method=winTalkList&boardType=T">��÷ �Ұ� �Խ���</a></li>
+							</ul>
+	            		</li>
+	            		<li><a href="/gameResult.do?method=notReceiveInfo">�̼��� ��÷��</a>
+							<ul class="snb_dep3">
+								<li><a href="/gameResult.do?method=notReceiveInfo">�ζ�6/45</a></li>
+								
+								<li><a href="/gameResult.do?method=noRecieveInfo720">���ݺ���720+</a></li>
+								<li><a href="/gameResult.do?method=notReceiveInfoElec">���ں���</a></li>
+								<li><a href="/gameResult.do?method=speetoNoGetList">�Ｎ�� �μ⺹��</a></li>
+							</ul>
+	            		</li>
+	            	</ul>
+            	</div>
+            </li>
+            <li class="basic gnb4"><a href="/store.do?method=sellerInfo645">�Ǹ���</a>
+            	<div class="group">
+	            	<ul>
+	            		<li><a href="/store.do?method=sellerInfo645">����ó �ȳ�</a>
+							<ul class="snb_dep3">
+								<li><a href="/store.do?method=sellerInfo645">�ζ�6/45�Ǹ��� ��ȸ</a></li>
+								<li><a href="/store.do?method=sellerInfoPrint">�Ｎ �� ���ݺ��� �Ǹ��� ��ȸ</a></li>
+							</ul>
+	            		</li>
+	            		<li><a href="/store.do?method=topStore&pageGubun=L645">��÷ �Ǹ���</a>
+							<ul class="snb_dep3">
+								<li><a href="/store.do?method=topStore&pageGubun=L645">ȸ����</a></li>
+								<!-- 
+								<li><a href="/store.do?method=topStoreRank&rank=1&pageGubun=L645">1�� ������</a></li>
+								<li><a href="/store.do?method=topStoreRank&rank=2&pageGubun=L645">2�� ������</a></li>
+								-->
+							</ul>
+	            		</li>
+	            	</ul>
+	            </div>
+            </li>
+            <li class="basic gnb5"><a href="/event.do?method=Eventend">�̺�Ʈ</a>
+            	<div class="group">
+	            	<ul>
+	            		<li><a href="/event.do?method=Eventend">�̺�Ʈ</a></li>
+	            	</ul>
+	            </div>
+            </li>
+			<li class="basic gnb6"><a href="/counsel.do?method=knowledge">�ູ����</a>
+				<div class="group">
+					<ul>
+						<li><a href="/counsel.do?method=knowledge">������ ���ǹ�ȭ</a>
+							<ul class="snb_dep3">
+								<li><a href="/counsel.do?method=knowledge">���ǹٷξ˱�</a></li>
+								<li><a href="/happy.do?method=healthCultureProc">�������� ���α׷�</a></li>
+								<li><a href="/user.do?method=campainVow">����ȭ ķ����</a></li>
+								<li><a href="/happy.do?method=healthCultureRule">����ȭ å�ӱ���</a></li>
+								<li><a href="/happy.do?method=healthCulturePrevent">���� ������ �����</a></li>
+								<li><a href="/happy.do?method=counselInfo">�ߵ����� �� ���ȳ�</a></li>
+							</ul>
+						</li>
+						<li><a href="/happy.do?method=fundInfo">���Ǳ��</a>
+							<ul class="snb_dep3">
+								<li><a href="/happy.do?method=fundInfo">���Ǳ�ݼҰ�</a></li>
+								<li><a href="/happy.do?method=fundAdvance">��ݻ��Ȱ��</a></li>
+							</ul>
+						</li>
+						<li><a href="/happy.do?method=happySympathyService">�ູ���������</a></li>
+						<li><a href="/hero.do?method=info">���������</a>
+							<ul class="snb_dep3">
+								<li><a href="/hero.do?method=info">��������ζ�?</a></li>
+								<li><a href="/hero.do?method=multiList">������ϱ�</a></li>
+								<li><a href="/hero.do?method=plusTemp">������ϱ�</a></li>
+								<li><a href="/hero.do?method=divTemp">���೪����</a></li>
+							</ul>
+						</li>
+						<li><a href="/webToon.do?method=toonList">�����̾߱�</a>
+							<ul class="snb_dep3">
+								<li><a href="/webToon.do?method=toonList">��������</a></li>
+							</ul>
+						</li>
+					</ul>
+					<ul>
+						<li><a href="/happy.do?method=fundArchiveList">ȫ������</a>
+							<ul class="snb_dep3">
+								<li><a href="/happy.do?method=fundArchiveList">����</a></li>
+								<li><a href="/happy.do?method=fundPressPrList">�����ڷ�</a></li>
+								<li><a href="/service.do?method=noticeList">��������</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+	</div>
+<script>
+
+/*
+ * QR�ȳ� ������ �˾� ȣ��
+**/
+function pop_qr() {
+	var strUrl = "/popup/pop_qr.html";	
+	var popwidth   = 600;
+	var popheight  = 793;
+	var winName    = "QR�ڵ� ��÷Ȯ��";
+
+	var new_popup = centerPop(strUrl, winName, popwidth, popheight, 'no');
+}
+
+</script>
+			</nav>
+		</div>
+		<div class="containerWrap"><!-- pc�� ��� ������ ���� ���δ� ��ũ�� �߰�  -->
+	
+
+
+<section class="contentSection">
+	<!--����-->
+	<nav class="lnbNav">
+		<div id="snb" class="lnb">
+	<h2 id="03" class="lnb_title">��÷���</h2>
+	<ul id="lnb" class="lnb_dep1">
+		<li id="03-01"><a href="/gameResult.do?method=byWin" class="menuLnb"><span>�ζ�6/45</span></a>
+			<ul class="lnb_dep2" style="display:none;">
+				<li id="03-01-01"><a href="/gameResult.do?method=byWin"><span> ȸ���� ��÷��ȣ</span></a></li>
+          		<li id="03-01-02"><a href="/gameResult.do?method=myWin"><span> ����ȣ ��÷Ȯ��</span></a></li>
+             	<li id="03-01-03"><a href="/gameResult.do?method=allWin"><span> ��÷����</span></a></li>
+				<li id="03-01-04"><a href="/gameResult.do?method=locInfo645"><span> ��÷�� ���޾ȳ�</span></a></li>
+				<li id="03-01-05"><a href="/gameResult.do?method=lotTv"><span> ��÷��� �ٽú���</span></a></li>
+				<li id="03-01-06"><a href="/gameResult.do?method=visitWinList"><span> ��÷��� ������û</span></a></li>
+			</ul>
+		</li>
+		<!-- <li id="03-02"><a href="/gameResult.do?method=win520" class="menuLnb"><span>���ݺ���520</span></a>
+			<ul class="lnb_dep2" style="display:none;">
+				<li id="03-02-01"><a href="/gameResult.do?method=win520"><span> ȸ���� ��÷��ȣ</span></a></li>
+             	<li id="03-02-02"><a href="/gameResult.do?method=myWin520"><span> ����ȣ ��÷Ȯ��</span></a></li>
+             	<li id="03-02-03"><a href="/gameResult.do?method=winResult"><span> ��÷����</span></a></li>
+				<li id="03-02-04"><a href="/gameResult.do?method=locInfo520"><span> ��÷�� ���޾ȳ�</span></a></li>
+				<li id="03-02-05"><a href="/gameResult.do?method=lotInfo"><span> ��÷��� �ٽú���</span></a></li>
+				<li id="03-02-06"><a href="/gameResult.do?method=visitWinList&tabGbn=2"><span> ��÷��� ������û</span></a></li>
+			</ul>
+		</li> -->
+		<li id="03-09"><a href="/gameResult.do?method=win720" class="menuLnb"><span>���ݺ���720+</span></a>
+			<ul class="lnb_dep2" style="display:none;">
+				<li id="03-09-01"><a href="/gameResult.do?method=win720"><span> ȸ���� ��÷��ȣ</span></a></li>
+             	<li id="03-09-02"><a href="/gameResult.do?method=myWin720"><span> ����ȣ ��÷Ȯ��</span></a></li>
+             	<li id="03-09-03"><a href="/gameResult.do?method=winResult720"><span> ��÷����</span></a></li>
+				<li id="03-09-04"><a href="/gameResult.do?method=locInfo720"><span> ��÷�� ���޾ȳ�</span></a></li>
+				<li id="03-09-05"><a href="/gameResult.do?method=lotInfo720"><span> ��÷��� �ٽú���</span></a></li>
+				<li id="03-09-06"><a href="/gameResult.do?method=visitWinList&tabGbn=2"><span> ��÷��� ������û</span></a></li>
+			</ul>
+		</li>
+		<li id="03-03"><a href="/gameResult.do?method=winList" class="menuLnb"><span>���ں���</span></a>
+		</li>
+		<li id="03-04"><a href="/gameResult.do?method=speettoWin" class="menuLnb"><span>�Ｎ���μ⺹��</span></a>
+			<ul class="lnb_dep2" style="display:none;">
+				<li id="03-04-01"><a href="/gameResult.do?method=speettoWin"><span> ��÷����</span></a></li>
+				<li id="03-04-02"><a href="/gameResult.do?method=speettoLotInfo"><span> ��÷�� ���޾ȳ�</span></a></li>
+			</ul>
+		</li>
+        <li id="03-05"><a href="/gameResult.do?method=statIndex" class="menuLnb"><span>�ζ�6/45 ��÷���</span></a>
+			<ul class="lnb_dep2">
+				<li id="03-05-01"><a href="/gameResult.do?method=statIndex"><span> ��÷���</span></a></li>
+                <li id="03-05-02"><a href="/gameResult.do?method=statByNumber"><span> ��ȣ�� ���</span></a></li>
+                <li id="03-05-03"><a href="/gameResult.do?method=statByColor"><span> ���� ���</span></a></li>
+                <li id="03-05-04"><a href="/gameResult.do?method=statGroupNum"><span> ������ ����Ƚ��</span></a></li>
+                <li id="03-05-05"><a href="/gameResult.do?method=noViewNumber"><span> �Ⱓ�� ������ ��ȣ</span></a></li>
+                <li id="03-05-06"><a href="/gameResult.do?method=statOddEven"><span> Ȧ¦���</span></a></li>
+                <li id="03-05-07"><a href="/gameResult.do?method=statConsNumber"><span> ���ӹ�ȣ ����</span></a></li>
+                <!-- <li id="03-05-08"><a href="/gameResult.do?method=statPattern"><span> ���Ϻм�ǥ</span></a></li> -->
+			</ul>
+		</li>
+        <!-- <li id="03-06"><a href="/gameResult.do?method=index520" class="menuLnb"><span style="letter-spacing: -1px;">���ݺ���520 ��÷���</span></a></li> -->
+        <li id="03-10"><a href="/gameResult.do?method=index720" class="menuLnb"><span style="letter-spacing: -1px;">���ݺ���720+ ��÷���</span></a></li>
+        <li id="03-07"><a href="/gameResult.do?method=highWin" class="menuLnb"><span>��÷�ҽ�</span></a>
+			<ul class="lnb_dep2" style="display:none;">
+				<li id="03-07-01"><a href="/gameResult.do?method=highWin"><span> ��÷�� ���ͺ�</span></a></li>
+             	<li id="03-07-02"><a href="/gameResult.do?method=winTalkList&boardType=T"><span> ��÷ �Ұ� �Խ���</span></a></li>
+			</ul>
+		</li>
+		<li id="03-08"><a href="/gameResult.do?method=notReceiveInfo" class="menuLnb"><span>�̼��� ��÷��</span></a>
+			<ul class="lnb_dep2" style="display:none;">
+				<li id="03-08-01"><a href="/gameResult.do?method=notReceiveInfo"><span> �ζ�6/45</span></a></li>
+                <!-- <li id="03-08-02"><a href="/gameResult.do?method=noRecieveInfo520"><span> ���ݺ���520</span></a></li> -->
+                <li id="03-08-05"><a href="/gameResult.do?method=noRecieveInfo720"><span> ���ݺ���720+</span></a></li>
+                <li id="03-08-03"><a href="/gameResult.do?method=notReceiveInfoElec"><span> ���ں���</span></a></li>
+                <li id="03-08-04"><a href="/gameResult.do?method=speetoNoGetList"><span> �Ｎ�� �μ⺹��</span></a></li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
+
+	</nav>
+	<!-- ������ ���� -->
+	<div id="article" class="contentsArticle">
+		<div class="header_article">
+			<h3 class="sub_title"></h3>
+			<p class="location"></p>
+		</div>
+		<div>
+			<div class="content_wrap content_winnum_645">    
+			
+ 				<div class="search_data">
+ 					<div class="inner">
+						<form name="frm" method="post" id="frm">
+							<span class="unit label">ȸ�� �ٷΰ���</span>
+							<input type="hidden" name="drwNo" id="drwNo">
+							<select id="hdrwComb" name="hdrwComb">
+							
+								
+								
+									<option value="1" selected>601~1146</option>
+									<option value="2">1~600</option>
+								
+							
+								
+							</select>							
+							<select id="dwrNoList" name="dwrNoList" title="ȸ�� ����">
+							
+								
+								
+									
+									
+									<option value="1146" selected>1146</option>
+									
+									
+									<option value="1145" >1145</option>
+									
+									
+									<option value="1144" >1144</option>
+									
+									
+									<option value="1143" >1143</option>
+									
+									
+									<option value="1142" >1142</option>
+									
+									
+									<option value="1141" >1141</option>
+									
+									
+									<option value="1140" >1140</option>
+									
+									
+									<option value="1139" >1139</option>
+									
+									
+									<option value="1138" >1138</option>
+									
+									
+									<option value="1137" >1137</option>
+									
+									
+									<option value="1136" >1136</option>
+									
+									
+									<option value="1135" >1135</option>
+									
+									
+									<option value="1134" >1134</option>
+									
+									
+									<option value="1133" >1133</option>
+									
+									
+									<option value="1132" >1132</option>
+									
+									
+									<option value="1131" >1131</option>
+									
+									
+									<option value="1130" >1130</option>
+									
+									
+									<option value="1129" >1129</option>
+									
+									
+									<option value="1128" >1128</option>
+									
+									
+									<option value="1127" >1127</option>
+									
+									
+									<option value="1126" >1126</option>
+									
+									
+									<option value="1125" >1125</option>
+									
+									
+									<option value="1124" >1124</option>
+									
+									
+									<option value="1123" >1123</option>
+									
+									
+									<option value="1122" >1122</option>
+									
+									
+									<option value="1121" >1121</option>
+									
+									
+									<option value="1120" >1120</option>
+									
+									
+									<option value="1119" >1119</option>
+									
+									
+									<option value="1118" >1118</option>
+									
+									
+									<option value="1117" >1117</option>
+									
+									
+									<option value="1116" >1116</option>
+									
+									
+									<option value="1115" >1115</option>
+									
+									
+									<option value="1114" >1114</option>
+									
+									
+									<option value="1113" >1113</option>
+									
+									
+									<option value="1112" >1112</option>
+									
+									
+									<option value="1111" >1111</option>
+									
+									
+									<option value="1110" >1110</option>
+									
+									
+									<option value="1109" >1109</option>
+									
+									
+									<option value="1108" >1108</option>
+									
+									
+									<option value="1107" >1107</option>
+									
+									
+									<option value="1106" >1106</option>
+									
+									
+									<option value="1105" >1105</option>
+									
+									
+									<option value="1104" >1104</option>
+									
+									
+									<option value="1103" >1103</option>
+									
+									
+									<option value="1102" >1102</option>
+									
+									
+									<option value="1101" >1101</option>
+									
+									
+									<option value="1100" >1100</option>
+									
+									
+									<option value="1099" >1099</option>
+									
+									
+									<option value="1098" >1098</option>
+									
+									
+									<option value="1097" >1097</option>
+									
+									
+									<option value="1096" >1096</option>
+									
+									
+									<option value="1095" >1095</option>
+									
+									
+									<option value="1094" >1094</option>
+									
+									
+									<option value="1093" >1093</option>
+									
+									
+									<option value="1092" >1092</option>
+									
+									
+									<option value="1091" >1091</option>
+									
+									
+									<option value="1090" >1090</option>
+									
+									
+									<option value="1089" >1089</option>
+									
+									
+									<option value="1088" >1088</option>
+									
+									
+									<option value="1087" >1087</option>
+									
+									
+									<option value="1086" >1086</option>
+									
+									
+									<option value="1085" >1085</option>
+									
+									
+									<option value="1084" >1084</option>
+									
+									
+									<option value="1083" >1083</option>
+									
+									
+									<option value="1082" >1082</option>
+									
+									
+									<option value="1081" >1081</option>
+									
+									
+									<option value="1080" >1080</option>
+									
+									
+									<option value="1079" >1079</option>
+									
+									
+									<option value="1078" >1078</option>
+									
+									
+									<option value="1077" >1077</option>
+									
+									
+									<option value="1076" >1076</option>
+									
+									
+									<option value="1075" >1075</option>
+									
+									
+									<option value="1074" >1074</option>
+									
+									
+									<option value="1073" >1073</option>
+									
+									
+									<option value="1072" >1072</option>
+									
+									
+									<option value="1071" >1071</option>
+									
+									
+									<option value="1070" >1070</option>
+									
+									
+									<option value="1069" >1069</option>
+									
+									
+									<option value="1068" >1068</option>
+									
+									
+									<option value="1067" >1067</option>
+									
+									
+									<option value="1066" >1066</option>
+									
+									
+									<option value="1065" >1065</option>
+									
+									
+									<option value="1064" >1064</option>
+									
+									
+									<option value="1063" >1063</option>
+									
+									
+									<option value="1062" >1062</option>
+									
+									
+									<option value="1061" >1061</option>
+									
+									
+									<option value="1060" >1060</option>
+									
+									
+									<option value="1059" >1059</option>
+									
+									
+									<option value="1058" >1058</option>
+									
+									
+									<option value="1057" >1057</option>
+									
+									
+									<option value="1056" >1056</option>
+									
+									
+									<option value="1055" >1055</option>
+									
+									
+									<option value="1054" >1054</option>
+									
+									
+									<option value="1053" >1053</option>
+									
+									
+									<option value="1052" >1052</option>
+									
+									
+									<option value="1051" >1051</option>
+									
+									
+									<option value="1050" >1050</option>
+									
+									
+									<option value="1049" >1049</option>
+									
+									
+									<option value="1048" >1048</option>
+									
+									
+									<option value="1047" >1047</option>
+									
+									
+									<option value="1046" >1046</option>
+									
+									
+									<option value="1045" >1045</option>
+									
+									
+									<option value="1044" >1044</option>
+									
+									
+									<option value="1043" >1043</option>
+									
+									
+									<option value="1042" >1042</option>
+									
+									
+									<option value="1041" >1041</option>
+									
+									
+									<option value="1040" >1040</option>
+									
+									
+									<option value="1039" >1039</option>
+									
+									
+									<option value="1038" >1038</option>
+									
+									
+									<option value="1037" >1037</option>
+									
+									
+									<option value="1036" >1036</option>
+									
+									
+									<option value="1035" >1035</option>
+									
+									
+									<option value="1034" >1034</option>
+									
+									
+									<option value="1033" >1033</option>
+									
+									
+									<option value="1032" >1032</option>
+									
+									
+									<option value="1031" >1031</option>
+									
+									
+									<option value="1030" >1030</option>
+									
+									
+									<option value="1029" >1029</option>
+									
+									
+									<option value="1028" >1028</option>
+									
+									
+									<option value="1027" >1027</option>
+									
+									
+									<option value="1026" >1026</option>
+									
+									
+									<option value="1025" >1025</option>
+									
+									
+									<option value="1024" >1024</option>
+									
+									
+									<option value="1023" >1023</option>
+									
+									
+									<option value="1022" >1022</option>
+									
+									
+									<option value="1021" >1021</option>
+									
+									
+									<option value="1020" >1020</option>
+									
+									
+									<option value="1019" >1019</option>
+									
+									
+									<option value="1018" >1018</option>
+									
+									
+									<option value="1017" >1017</option>
+									
+									
+									<option value="1016" >1016</option>
+									
+									
+									<option value="1015" >1015</option>
+									
+									
+									<option value="1014" >1014</option>
+									
+									
+									<option value="1013" >1013</option>
+									
+									
+									<option value="1012" >1012</option>
+									
+									
+									<option value="1011" >1011</option>
+									
+									
+									<option value="1010" >1010</option>
+									
+									
+									<option value="1009" >1009</option>
+									
+									
+									<option value="1008" >1008</option>
+									
+									
+									<option value="1007" >1007</option>
+									
+									
+									<option value="1006" >1006</option>
+									
+									
+									<option value="1005" >1005</option>
+									
+									
+									<option value="1004" >1004</option>
+									
+									
+									<option value="1003" >1003</option>
+									
+									
+									<option value="1002" >1002</option>
+									
+									
+									<option value="1001" >1001</option>
+									
+									
+									<option value="1000" >1000</option>
+									
+									
+									<option value="999" >999</option>
+									
+									
+									<option value="998" >998</option>
+									
+									
+									<option value="997" >997</option>
+									
+									
+									<option value="996" >996</option>
+									
+									
+									<option value="995" >995</option>
+									
+									
+									<option value="994" >994</option>
+									
+									
+									<option value="993" >993</option>
+									
+									
+									<option value="992" >992</option>
+									
+									
+									<option value="991" >991</option>
+									
+									
+									<option value="990" >990</option>
+									
+									
+									<option value="989" >989</option>
+									
+									
+									<option value="988" >988</option>
+									
+									
+									<option value="987" >987</option>
+									
+									
+									<option value="986" >986</option>
+									
+									
+									<option value="985" >985</option>
+									
+									
+									<option value="984" >984</option>
+									
+									
+									<option value="983" >983</option>
+									
+									
+									<option value="982" >982</option>
+									
+									
+									<option value="981" >981</option>
+									
+									
+									<option value="980" >980</option>
+									
+									
+									<option value="979" >979</option>
+									
+									
+									<option value="978" >978</option>
+									
+									
+									<option value="977" >977</option>
+									
+									
+									<option value="976" >976</option>
+									
+									
+									<option value="975" >975</option>
+									
+									
+									<option value="974" >974</option>
+									
+									
+									<option value="973" >973</option>
+									
+									
+									<option value="972" >972</option>
+									
+									
+									<option value="971" >971</option>
+									
+									
+									<option value="970" >970</option>
+									
+									
+									<option value="969" >969</option>
+									
+									
+									<option value="968" >968</option>
+									
+									
+									<option value="967" >967</option>
+									
+									
+									<option value="966" >966</option>
+									
+									
+									<option value="965" >965</option>
+									
+									
+									<option value="964" >964</option>
+									
+									
+									<option value="963" >963</option>
+									
+									
+									<option value="962" >962</option>
+									
+									
+									<option value="961" >961</option>
+									
+									
+									<option value="960" >960</option>
+									
+									
+									<option value="959" >959</option>
+									
+									
+									<option value="958" >958</option>
+									
+									
+									<option value="957" >957</option>
+									
+									
+									<option value="956" >956</option>
+									
+									
+									<option value="955" >955</option>
+									
+									
+									<option value="954" >954</option>
+									
+									
+									<option value="953" >953</option>
+									
+									
+									<option value="952" >952</option>
+									
+									
+									<option value="951" >951</option>
+									
+									
+									<option value="950" >950</option>
+									
+									
+									<option value="949" >949</option>
+									
+									
+									<option value="948" >948</option>
+									
+									
+									<option value="947" >947</option>
+									
+									
+									<option value="946" >946</option>
+									
+									
+									<option value="945" >945</option>
+									
+									
+									<option value="944" >944</option>
+									
+									
+									<option value="943" >943</option>
+									
+									
+									<option value="942" >942</option>
+									
+									
+									<option value="941" >941</option>
+									
+									
+									<option value="940" >940</option>
+									
+									
+									<option value="939" >939</option>
+									
+									
+									<option value="938" >938</option>
+									
+									
+									<option value="937" >937</option>
+									
+									
+									<option value="936" >936</option>
+									
+									
+									<option value="935" >935</option>
+									
+									
+									<option value="934" >934</option>
+									
+									
+									<option value="933" >933</option>
+									
+									
+									<option value="932" >932</option>
+									
+									
+									<option value="931" >931</option>
+									
+									
+									<option value="930" >930</option>
+									
+									
+									<option value="929" >929</option>
+									
+									
+									<option value="928" >928</option>
+									
+									
+									<option value="927" >927</option>
+									
+									
+									<option value="926" >926</option>
+									
+									
+									<option value="925" >925</option>
+									
+									
+									<option value="924" >924</option>
+									
+									
+									<option value="923" >923</option>
+									
+									
+									<option value="922" >922</option>
+									
+									
+									<option value="921" >921</option>
+									
+									
+									<option value="920" >920</option>
+									
+									
+									<option value="919" >919</option>
+									
+									
+									<option value="918" >918</option>
+									
+									
+									<option value="917" >917</option>
+									
+									
+									<option value="916" >916</option>
+									
+									
+									<option value="915" >915</option>
+									
+									
+									<option value="914" >914</option>
+									
+									
+									<option value="913" >913</option>
+									
+									
+									<option value="912" >912</option>
+									
+									
+									<option value="911" >911</option>
+									
+									
+									<option value="910" >910</option>
+									
+									
+									<option value="909" >909</option>
+									
+									
+									<option value="908" >908</option>
+									
+									
+									<option value="907" >907</option>
+									
+									
+									<option value="906" >906</option>
+									
+									
+									<option value="905" >905</option>
+									
+									
+									<option value="904" >904</option>
+									
+									
+									<option value="903" >903</option>
+									
+									
+									<option value="902" >902</option>
+									
+									
+									<option value="901" >901</option>
+									
+									
+									<option value="900" >900</option>
+									
+									
+									<option value="899" >899</option>
+									
+									
+									<option value="898" >898</option>
+									
+									
+									<option value="897" >897</option>
+									
+									
+									<option value="896" >896</option>
+									
+									
+									<option value="895" >895</option>
+									
+									
+									<option value="894" >894</option>
+									
+									
+									<option value="893" >893</option>
+									
+									
+									<option value="892" >892</option>
+									
+									
+									<option value="891" >891</option>
+									
+									
+									<option value="890" >890</option>
+									
+									
+									<option value="889" >889</option>
+									
+									
+									<option value="888" >888</option>
+									
+									
+									<option value="887" >887</option>
+									
+									
+									<option value="886" >886</option>
+									
+									
+									<option value="885" >885</option>
+									
+									
+									<option value="884" >884</option>
+									
+									
+									<option value="883" >883</option>
+									
+									
+									<option value="882" >882</option>
+									
+									
+									<option value="881" >881</option>
+									
+									
+									<option value="880" >880</option>
+									
+									
+									<option value="879" >879</option>
+									
+									
+									<option value="878" >878</option>
+									
+									
+									<option value="877" >877</option>
+									
+									
+									<option value="876" >876</option>
+									
+									
+									<option value="875" >875</option>
+									
+									
+									<option value="874" >874</option>
+									
+									
+									<option value="873" >873</option>
+									
+									
+									<option value="872" >872</option>
+									
+									
+									<option value="871" >871</option>
+									
+									
+									<option value="870" >870</option>
+									
+									
+									<option value="869" >869</option>
+									
+									
+									<option value="868" >868</option>
+									
+									
+									<option value="867" >867</option>
+									
+									
+									<option value="866" >866</option>
+									
+									
+									<option value="865" >865</option>
+									
+									
+									<option value="864" >864</option>
+									
+									
+									<option value="863" >863</option>
+									
+									
+									<option value="862" >862</option>
+									
+									
+									<option value="861" >861</option>
+									
+									
+									<option value="860" >860</option>
+									
+									
+									<option value="859" >859</option>
+									
+									
+									<option value="858" >858</option>
+									
+									
+									<option value="857" >857</option>
+									
+									
+									<option value="856" >856</option>
+									
+									
+									<option value="855" >855</option>
+									
+									
+									<option value="854" >854</option>
+									
+									
+									<option value="853" >853</option>
+									
+									
+									<option value="852" >852</option>
+									
+									
+									<option value="851" >851</option>
+									
+									
+									<option value="850" >850</option>
+									
+									
+									<option value="849" >849</option>
+									
+									
+									<option value="848" >848</option>
+									
+									
+									<option value="847" >847</option>
+									
+									
+									<option value="846" >846</option>
+									
+									
+									<option value="845" >845</option>
+									
+									
+									<option value="844" >844</option>
+									
+									
+									<option value="843" >843</option>
+									
+									
+									<option value="842" >842</option>
+									
+									
+									<option value="841" >841</option>
+									
+									
+									<option value="840" >840</option>
+									
+									
+									<option value="839" >839</option>
+									
+									
+									<option value="838" >838</option>
+									
+									
+									<option value="837" >837</option>
+									
+									
+									<option value="836" >836</option>
+									
+									
+									<option value="835" >835</option>
+									
+									
+									<option value="834" >834</option>
+									
+									
+									<option value="833" >833</option>
+									
+									
+									<option value="832" >832</option>
+									
+									
+									<option value="831" >831</option>
+									
+									
+									<option value="830" >830</option>
+									
+									
+									<option value="829" >829</option>
+									
+									
+									<option value="828" >828</option>
+									
+									
+									<option value="827" >827</option>
+									
+									
+									<option value="826" >826</option>
+									
+									
+									<option value="825" >825</option>
+									
+									
+									<option value="824" >824</option>
+									
+									
+									<option value="823" >823</option>
+									
+									
+									<option value="822" >822</option>
+									
+									
+									<option value="821" >821</option>
+									
+									
+									<option value="820" >820</option>
+									
+									
+									<option value="819" >819</option>
+									
+									
+									<option value="818" >818</option>
+									
+									
+									<option value="817" >817</option>
+									
+									
+									<option value="816" >816</option>
+									
+									
+									<option value="815" >815</option>
+									
+									
+									<option value="814" >814</option>
+									
+									
+									<option value="813" >813</option>
+									
+									
+									<option value="812" >812</option>
+									
+									
+									<option value="811" >811</option>
+									
+									
+									<option value="810" >810</option>
+									
+									
+									<option value="809" >809</option>
+									
+									
+									<option value="808" >808</option>
+									
+									
+									<option value="807" >807</option>
+									
+									
+									<option value="806" >806</option>
+									
+									
+									<option value="805" >805</option>
+									
+									
+									<option value="804" >804</option>
+									
+									
+									<option value="803" >803</option>
+									
+									
+									<option value="802" >802</option>
+									
+									
+									<option value="801" >801</option>
+									
+									
+									<option value="800" >800</option>
+									
+									
+									<option value="799" >799</option>
+									
+									
+									<option value="798" >798</option>
+									
+									
+									<option value="797" >797</option>
+									
+									
+									<option value="796" >796</option>
+									
+									
+									<option value="795" >795</option>
+									
+									
+									<option value="794" >794</option>
+									
+									
+									<option value="793" >793</option>
+									
+									
+									<option value="792" >792</option>
+									
+									
+									<option value="791" >791</option>
+									
+									
+									<option value="790" >790</option>
+									
+									
+									<option value="789" >789</option>
+									
+									
+									<option value="788" >788</option>
+									
+									
+									<option value="787" >787</option>
+									
+									
+									<option value="786" >786</option>
+									
+									
+									<option value="785" >785</option>
+									
+									
+									<option value="784" >784</option>
+									
+									
+									<option value="783" >783</option>
+									
+									
+									<option value="782" >782</option>
+									
+									
+									<option value="781" >781</option>
+									
+									
+									<option value="780" >780</option>
+									
+									
+									<option value="779" >779</option>
+									
+									
+									<option value="778" >778</option>
+									
+									
+									<option value="777" >777</option>
+									
+									
+									<option value="776" >776</option>
+									
+									
+									<option value="775" >775</option>
+									
+									
+									<option value="774" >774</option>
+									
+									
+									<option value="773" >773</option>
+									
+									
+									<option value="772" >772</option>
+									
+									
+									<option value="771" >771</option>
+									
+									
+									<option value="770" >770</option>
+									
+									
+									<option value="769" >769</option>
+									
+									
+									<option value="768" >768</option>
+									
+									
+									<option value="767" >767</option>
+									
+									
+									<option value="766" >766</option>
+									
+									
+									<option value="765" >765</option>
+									
+									
+									<option value="764" >764</option>
+									
+									
+									<option value="763" >763</option>
+									
+									
+									<option value="762" >762</option>
+									
+									
+									<option value="761" >761</option>
+									
+									
+									<option value="760" >760</option>
+									
+									
+									<option value="759" >759</option>
+									
+									
+									<option value="758" >758</option>
+									
+									
+									<option value="757" >757</option>
+									
+									
+									<option value="756" >756</option>
+									
+									
+									<option value="755" >755</option>
+									
+									
+									<option value="754" >754</option>
+									
+									
+									<option value="753" >753</option>
+									
+									
+									<option value="752" >752</option>
+									
+									
+									<option value="751" >751</option>
+									
+									
+									<option value="750" >750</option>
+									
+									
+									<option value="749" >749</option>
+									
+									
+									<option value="748" >748</option>
+									
+									
+									<option value="747" >747</option>
+									
+									
+									<option value="746" >746</option>
+									
+									
+									<option value="745" >745</option>
+									
+									
+									<option value="744" >744</option>
+									
+									
+									<option value="743" >743</option>
+									
+									
+									<option value="742" >742</option>
+									
+									
+									<option value="741" >741</option>
+									
+									
+									<option value="740" >740</option>
+									
+									
+									<option value="739" >739</option>
+									
+									
+									<option value="738" >738</option>
+									
+									
+									<option value="737" >737</option>
+									
+									
+									<option value="736" >736</option>
+									
+									
+									<option value="735" >735</option>
+									
+									
+									<option value="734" >734</option>
+									
+									
+									<option value="733" >733</option>
+									
+									
+									<option value="732" >732</option>
+									
+									
+									<option value="731" >731</option>
+									
+									
+									<option value="730" >730</option>
+									
+									
+									<option value="729" >729</option>
+									
+									
+									<option value="728" >728</option>
+									
+									
+									<option value="727" >727</option>
+									
+									
+									<option value="726" >726</option>
+									
+									
+									<option value="725" >725</option>
+									
+									
+									<option value="724" >724</option>
+									
+									
+									<option value="723" >723</option>
+									
+									
+									<option value="722" >722</option>
+									
+									
+									<option value="721" >721</option>
+									
+									
+									<option value="720" >720</option>
+									
+									
+									<option value="719" >719</option>
+									
+									
+									<option value="718" >718</option>
+									
+									
+									<option value="717" >717</option>
+									
+									
+									<option value="716" >716</option>
+									
+									
+									<option value="715" >715</option>
+									
+									
+									<option value="714" >714</option>
+									
+									
+									<option value="713" >713</option>
+									
+									
+									<option value="712" >712</option>
+									
+									
+									<option value="711" >711</option>
+									
+									
+									<option value="710" >710</option>
+									
+									
+									<option value="709" >709</option>
+									
+									
+									<option value="708" >708</option>
+									
+									
+									<option value="707" >707</option>
+									
+									
+									<option value="706" >706</option>
+									
+									
+									<option value="705" >705</option>
+									
+									
+									<option value="704" >704</option>
+									
+									
+									<option value="703" >703</option>
+									
+									
+									<option value="702" >702</option>
+									
+									
+									<option value="701" >701</option>
+									
+									
+									<option value="700" >700</option>
+									
+									
+									<option value="699" >699</option>
+									
+									
+									<option value="698" >698</option>
+									
+									
+									<option value="697" >697</option>
+									
+									
+									<option value="696" >696</option>
+									
+									
+									<option value="695" >695</option>
+									
+									
+									<option value="694" >694</option>
+									
+									
+									<option value="693" >693</option>
+									
+									
+									<option value="692" >692</option>
+									
+									
+									<option value="691" >691</option>
+									
+									
+									<option value="690" >690</option>
+									
+									
+									<option value="689" >689</option>
+									
+									
+									<option value="688" >688</option>
+									
+									
+									<option value="687" >687</option>
+									
+									
+									<option value="686" >686</option>
+									
+									
+									<option value="685" >685</option>
+									
+									
+									<option value="684" >684</option>
+									
+									
+									<option value="683" >683</option>
+									
+									
+									<option value="682" >682</option>
+									
+									
+									<option value="681" >681</option>
+									
+									
+									<option value="680" >680</option>
+									
+									
+									<option value="679" >679</option>
+									
+									
+									<option value="678" >678</option>
+									
+									
+									<option value="677" >677</option>
+									
+									
+									<option value="676" >676</option>
+									
+									
+									<option value="675" >675</option>
+									
+									
+									<option value="674" >674</option>
+									
+									
+									<option value="673" >673</option>
+									
+									
+									<option value="672" >672</option>
+									
+									
+									<option value="671" >671</option>
+									
+									
+									<option value="670" >670</option>
+									
+									
+									<option value="669" >669</option>
+									
+									
+									<option value="668" >668</option>
+									
+									
+									<option value="667" >667</option>
+									
+									
+									<option value="666" >666</option>
+									
+									
+									<option value="665" >665</option>
+									
+									
+									<option value="664" >664</option>
+									
+									
+									<option value="663" >663</option>
+									
+									
+									<option value="662" >662</option>
+									
+									
+									<option value="661" >661</option>
+									
+									
+									<option value="660" >660</option>
+									
+									
+									<option value="659" >659</option>
+									
+									
+									<option value="658" >658</option>
+									
+									
+									<option value="657" >657</option>
+									
+									
+									<option value="656" >656</option>
+									
+									
+									<option value="655" >655</option>
+									
+									
+									<option value="654" >654</option>
+									
+									
+									<option value="653" >653</option>
+									
+									
+									<option value="652" >652</option>
+									
+									
+									<option value="651" >651</option>
+									
+									
+									<option value="650" >650</option>
+									
+									
+									<option value="649" >649</option>
+									
+									
+									<option value="648" >648</option>
+									
+									
+									<option value="647" >647</option>
+									
+									
+									<option value="646" >646</option>
+									
+									
+									<option value="645" >645</option>
+									
+									
+									<option value="644" >644</option>
+									
+									
+									<option value="643" >643</option>
+									
+									
+									<option value="642" >642</option>
+									
+									
+									<option value="641" >641</option>
+									
+									
+									<option value="640" >640</option>
+									
+									
+									<option value="639" >639</option>
+									
+									
+									<option value="638" >638</option>
+									
+									
+									<option value="637" >637</option>
+									
+									
+									<option value="636" >636</option>
+									
+									
+									<option value="635" >635</option>
+									
+									
+									<option value="634" >634</option>
+									
+									
+									<option value="633" >633</option>
+									
+									
+									<option value="632" >632</option>
+									
+									
+									<option value="631" >631</option>
+									
+									
+									<option value="630" >630</option>
+									
+									
+									<option value="629" >629</option>
+									
+									
+									<option value="628" >628</option>
+									
+									
+									<option value="627" >627</option>
+									
+									
+									<option value="626" >626</option>
+									
+									
+									<option value="625" >625</option>
+									
+									
+									<option value="624" >624</option>
+									
+									
+									<option value="623" >623</option>
+									
+									
+									<option value="622" >622</option>
+									
+									
+									<option value="621" >621</option>
+									
+									
+									<option value="620" >620</option>
+									
+									
+									<option value="619" >619</option>
+									
+									
+									<option value="618" >618</option>
+									
+									
+									<option value="617" >617</option>
+									
+									
+									<option value="616" >616</option>
+									
+									
+									<option value="615" >615</option>
+									
+									
+									<option value="614" >614</option>
+									
+									
+									<option value="613" >613</option>
+									
+									
+									<option value="612" >612</option>
+									
+									
+									<option value="611" >611</option>
+									
+									
+									<option value="610" >610</option>
+									
+									
+									<option value="609" >609</option>
+									
+									
+									<option value="608" >608</option>
+									
+									
+									<option value="607" >607</option>
+									
+									
+									<option value="606" >606</option>
+									
+									
+									<option value="605" >605</option>
+									
+									
+									<option value="604" >604</option>
+									
+									
+									<option value="603" >603</option>
+									
+									
+									<option value="602" >602</option>
+									
+									
+									<option value="601" >601</option>
+									
+									
+								
+							
+								
+							</select>
+							<a id="searchBtn" class="btn_common form blu" href="javascript:void(0)">��ȸ</a>
+						</form>
+					</div>
+ 				</div>
+				<div class="win_result">
+					<h4><strong>1146ȸ</strong> ��÷���</h4>
+					<p class="desc">(2024�� 11�� 16�� ��÷)</p>
+					<div class="nums">
+						<div class="num win">
+							<strong>��÷��ȣ</strong>
+							<p>
+								<span class="ball_645 lrg ball1">6</span>
+								<span class="ball_645 lrg ball2">11</span>
+								<span class="ball_645 lrg ball2">17</span>
+								<span class="ball_645 lrg ball2">19</span>
+								<span class="ball_645 lrg ball4">40</span>
+								<span class="ball_645 lrg ball5">43</span>
+							</p>
+						</div>
+						<div class="num bonus">
+							<strong>���ʽ�</strong>
+							<p><span class="ball_645 lrg ball3">28</span></p>
+						</div>
+					</div>
+				</div>
+				<table class="tbl_data tbl_data_col">
+                     <caption>1146ȸ  ������ ������ �� ��÷�ݾ�, ��÷���� ��, 1���Ӵ� ��÷�ݾ�, ��÷����, ��� �ȳ�</caption>
+                     <colgroup>
+                         <col style="width:85px">
+                         <col style="width:180px">
+                         <col style="width:145px">
+                         <col style="width:180px">
+                         <col>
+                         <col style="width:110px">
+                     </colgroup>
+                     <thead>
+                         <tr>
+                             <th scope="col">����</th>
+                             <th scope="col">������ �� ��÷�ݾ�</th>
+                             <th scope="col">��÷���� ��</th>
+                             <th scope="col">1���Ӵ� ��÷�ݾ�</th>
+                             <th scope="col">��÷����</th>
+                             <th scope="col">���</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+						<tr>
+                             <td>1��</td>
+                             <td class="tar"><strong class="color_key1">27,791,239,883��</strong></td>
+                             <td>11</td>
+                             <td class="tar">2,526,476,353��</td>
+                             <td>��÷��ȣ <strong class="length">6��</strong> ������ġ</td>
+                             <td rowspan="5">
+                             
+                                 1��<br>
+                                 
+									�ڵ�8<br>
+                                 
+                                 
+                                 	����2<br>
+                                 
+								 
+									���ڵ�1
+								 
+							                                  
+                             </td>
+						</tr>
+						<tr>
+	                         <td>2��</td>
+	                         <td class="tar"><strong class="color_key1">4,631,873,328��</strong></td>
+	                         <td>72</td>
+	                         <td class="tar">64,331,574��</td>
+	                         <td class="nobd_right">��÷��ȣ <strong class="length">5��</strong> ������ġ<br>+<strong class="length">���ʽ�</strong> ������ġ</td>
+						</tr>
+						<tr>
+							<td>3��</td>
+							<td class="tar"><strong class="color_key1">4,631,876,160��</strong></td>
+							<td>3,030</td>
+							<td class="tar">1,528,672��</td>
+							<td class="nobd_right">��÷��ȣ <strong class="length">5��</strong> ������ġ</td>
+						</tr>
+						<tr>
+							<td>4��</td>
+							<td class="tar"><strong class="color_key1">7,907,300,000��</strong></td>
+							<td>158,146</td>
+							<td class="tar">50,000��</td>
+							<td class="nobd_right">��÷��ȣ <strong class="length">4��</strong> ������ġ</td>
+						</tr>
+						<tr>
+                            <td>5��</td>
+							<td class="tar"><strong class="color_key1">13,385,085,000��</strong></td>
+							<td>2,677,017</td>
+							<td class="tar">5,000��</td>
+							<td class="nobd_right">��÷��ȣ <strong class="length">3��</strong> ������ġ</td>
+						</tr>
+                     </tbody>
+                 </table>
+                 <ul class="list_text_common">
+                 	<li>��÷�� ���ޱ��� : ���ް����Ϸκ��� 1�� (������ ��� �Ϳ�����)</li>
+					<li>���Ǹűݾ� : <strong>116,694,743,000��</strong></li>
+                 </ul>
+				<div class="btns_function bottom border">
+					<div class="left mid">
+						<a class="btn_common mid" href="/store.do?method=topStore&pageGubun=L645">��÷�Ǹ��� ��ȸ</a>
+						<a class="btn_common mid" href="/gameResult.do?method=notReceiveInfo">�̼��� ��÷�� �ȳ�</a>
+					</div>
+					<div class="right">
+						<form name="frm2" id="frm2" method="post">
+							<input type="hidden" name="nowPage" id="nowPage" value="">
+							<select id="drwNoStart" name="drwNoStart" title="���,���� �ٿ� ����ȸ�� ����">
+							
+								
+								
+									
+									
+									<option value="1146" selected>1146</option>
+									
+									
+									<option value="1145" >1145</option>
+									
+									
+									<option value="1144" >1144</option>
+									
+									
+									<option value="1143" >1143</option>
+									
+									
+									<option value="1142" >1142</option>
+									
+									
+									<option value="1141" >1141</option>
+									
+									
+									<option value="1140" >1140</option>
+									
+									
+									<option value="1139" >1139</option>
+									
+									
+									<option value="1138" >1138</option>
+									
+									
+									<option value="1137" >1137</option>
+									
+									
+									<option value="1136" >1136</option>
+									
+									
+									<option value="1135" >1135</option>
+									
+									
+									<option value="1134" >1134</option>
+									
+									
+									<option value="1133" >1133</option>
+									
+									
+									<option value="1132" >1132</option>
+									
+									
+									<option value="1131" >1131</option>
+									
+									
+									<option value="1130" >1130</option>
+									
+									
+									<option value="1129" >1129</option>
+									
+									
+									<option value="1128" >1128</option>
+									
+									
+									<option value="1127" >1127</option>
+									
+									
+									<option value="1126" >1126</option>
+									
+									
+									<option value="1125" >1125</option>
+									
+									
+									<option value="1124" >1124</option>
+									
+									
+									<option value="1123" >1123</option>
+									
+									
+									<option value="1122" >1122</option>
+									
+									
+									<option value="1121" >1121</option>
+									
+									
+									<option value="1120" >1120</option>
+									
+									
+									<option value="1119" >1119</option>
+									
+									
+									<option value="1118" >1118</option>
+									
+									
+									<option value="1117" >1117</option>
+									
+									
+									<option value="1116" >1116</option>
+									
+									
+									<option value="1115" >1115</option>
+									
+									
+									<option value="1114" >1114</option>
+									
+									
+									<option value="1113" >1113</option>
+									
+									
+									<option value="1112" >1112</option>
+									
+									
+									<option value="1111" >1111</option>
+									
+									
+									<option value="1110" >1110</option>
+									
+									
+									<option value="1109" >1109</option>
+									
+									
+									<option value="1108" >1108</option>
+									
+									
+									<option value="1107" >1107</option>
+									
+									
+									<option value="1106" >1106</option>
+									
+									
+									<option value="1105" >1105</option>
+									
+									
+									<option value="1104" >1104</option>
+									
+									
+									<option value="1103" >1103</option>
+									
+									
+									<option value="1102" >1102</option>
+									
+									
+									<option value="1101" >1101</option>
+									
+									
+									<option value="1100" >1100</option>
+									
+									
+									<option value="1099" >1099</option>
+									
+									
+									<option value="1098" >1098</option>
+									
+									
+									<option value="1097" >1097</option>
+									
+									
+									<option value="1096" >1096</option>
+									
+									
+									<option value="1095" >1095</option>
+									
+									
+									<option value="1094" >1094</option>
+									
+									
+									<option value="1093" >1093</option>
+									
+									
+									<option value="1092" >1092</option>
+									
+									
+									<option value="1091" >1091</option>
+									
+									
+									<option value="1090" >1090</option>
+									
+									
+									<option value="1089" >1089</option>
+									
+									
+									<option value="1088" >1088</option>
+									
+									
+									<option value="1087" >1087</option>
+									
+									
+									<option value="1086" >1086</option>
+									
+									
+									<option value="1085" >1085</option>
+									
+									
+									<option value="1084" >1084</option>
+									
+									
+									<option value="1083" >1083</option>
+									
+									
+									<option value="1082" >1082</option>
+									
+									
+									<option value="1081" >1081</option>
+									
+									
+									<option value="1080" >1080</option>
+									
+									
+									<option value="1079" >1079</option>
+									
+									
+									<option value="1078" >1078</option>
+									
+									
+									<option value="1077" >1077</option>
+									
+									
+									<option value="1076" >1076</option>
+									
+									
+									<option value="1075" >1075</option>
+									
+									
+									<option value="1074" >1074</option>
+									
+									
+									<option value="1073" >1073</option>
+									
+									
+									<option value="1072" >1072</option>
+									
+									
+									<option value="1071" >1071</option>
+									
+									
+									<option value="1070" >1070</option>
+									
+									
+									<option value="1069" >1069</option>
+									
+									
+									<option value="1068" >1068</option>
+									
+									
+									<option value="1067" >1067</option>
+									
+									
+									<option value="1066" >1066</option>
+									
+									
+									<option value="1065" >1065</option>
+									
+									
+									<option value="1064" >1064</option>
+									
+									
+									<option value="1063" >1063</option>
+									
+									
+									<option value="1062" >1062</option>
+									
+									
+									<option value="1061" >1061</option>
+									
+									
+									<option value="1060" >1060</option>
+									
+									
+									<option value="1059" >1059</option>
+									
+									
+									<option value="1058" >1058</option>
+									
+									
+									<option value="1057" >1057</option>
+									
+									
+									<option value="1056" >1056</option>
+									
+									
+									<option value="1055" >1055</option>
+									
+									
+									<option value="1054" >1054</option>
+									
+									
+									<option value="1053" >1053</option>
+									
+									
+									<option value="1052" >1052</option>
+									
+									
+									<option value="1051" >1051</option>
+									
+									
+									<option value="1050" >1050</option>
+									
+									
+									<option value="1049" >1049</option>
+									
+									
+									<option value="1048" >1048</option>
+									
+									
+									<option value="1047" >1047</option>
+									
+									
+									<option value="1046" >1046</option>
+									
+									
+									<option value="1045" >1045</option>
+									
+									
+									<option value="1044" >1044</option>
+									
+									
+									<option value="1043" >1043</option>
+									
+									
+									<option value="1042" >1042</option>
+									
+									
+									<option value="1041" >1041</option>
+									
+									
+									<option value="1040" >1040</option>
+									
+									
+									<option value="1039" >1039</option>
+									
+									
+									<option value="1038" >1038</option>
+									
+									
+									<option value="1037" >1037</option>
+									
+									
+									<option value="1036" >1036</option>
+									
+									
+									<option value="1035" >1035</option>
+									
+									
+									<option value="1034" >1034</option>
+									
+									
+									<option value="1033" >1033</option>
+									
+									
+									<option value="1032" >1032</option>
+									
+									
+									<option value="1031" >1031</option>
+									
+									
+									<option value="1030" >1030</option>
+									
+									
+									<option value="1029" >1029</option>
+									
+									
+									<option value="1028" >1028</option>
+									
+									
+									<option value="1027" >1027</option>
+									
+									
+									<option value="1026" >1026</option>
+									
+									
+									<option value="1025" >1025</option>
+									
+									
+									<option value="1024" >1024</option>
+									
+									
+									<option value="1023" >1023</option>
+									
+									
+									<option value="1022" >1022</option>
+									
+									
+									<option value="1021" >1021</option>
+									
+									
+									<option value="1020" >1020</option>
+									
+									
+									<option value="1019" >1019</option>
+									
+									
+									<option value="1018" >1018</option>
+									
+									
+									<option value="1017" >1017</option>
+									
+									
+									<option value="1016" >1016</option>
+									
+									
+									<option value="1015" >1015</option>
+									
+									
+									<option value="1014" >1014</option>
+									
+									
+									<option value="1013" >1013</option>
+									
+									
+									<option value="1012" >1012</option>
+									
+									
+									<option value="1011" >1011</option>
+									
+									
+									<option value="1010" >1010</option>
+									
+									
+									<option value="1009" >1009</option>
+									
+									
+									<option value="1008" >1008</option>
+									
+									
+									<option value="1007" >1007</option>
+									
+									
+									<option value="1006" >1006</option>
+									
+									
+									<option value="1005" >1005</option>
+									
+									
+									<option value="1004" >1004</option>
+									
+									
+									<option value="1003" >1003</option>
+									
+									
+									<option value="1002" >1002</option>
+									
+									
+									<option value="1001" >1001</option>
+									
+									
+									<option value="1000" >1000</option>
+									
+									
+									<option value="999" >999</option>
+									
+									
+									<option value="998" >998</option>
+									
+									
+									<option value="997" >997</option>
+									
+									
+									<option value="996" >996</option>
+									
+									
+									<option value="995" >995</option>
+									
+									
+									<option value="994" >994</option>
+									
+									
+									<option value="993" >993</option>
+									
+									
+									<option value="992" >992</option>
+									
+									
+									<option value="991" >991</option>
+									
+									
+									<option value="990" >990</option>
+									
+									
+									<option value="989" >989</option>
+									
+									
+									<option value="988" >988</option>
+									
+									
+									<option value="987" >987</option>
+									
+									
+									<option value="986" >986</option>
+									
+									
+									<option value="985" >985</option>
+									
+									
+									<option value="984" >984</option>
+									
+									
+									<option value="983" >983</option>
+									
+									
+									<option value="982" >982</option>
+									
+									
+									<option value="981" >981</option>
+									
+									
+									<option value="980" >980</option>
+									
+									
+									<option value="979" >979</option>
+									
+									
+									<option value="978" >978</option>
+									
+									
+									<option value="977" >977</option>
+									
+									
+									<option value="976" >976</option>
+									
+									
+									<option value="975" >975</option>
+									
+									
+									<option value="974" >974</option>
+									
+									
+									<option value="973" >973</option>
+									
+									
+									<option value="972" >972</option>
+									
+									
+									<option value="971" >971</option>
+									
+									
+									<option value="970" >970</option>
+									
+									
+									<option value="969" >969</option>
+									
+									
+									<option value="968" >968</option>
+									
+									
+									<option value="967" >967</option>
+									
+									
+									<option value="966" >966</option>
+									
+									
+									<option value="965" >965</option>
+									
+									
+									<option value="964" >964</option>
+									
+									
+									<option value="963" >963</option>
+									
+									
+									<option value="962" >962</option>
+									
+									
+									<option value="961" >961</option>
+									
+									
+									<option value="960" >960</option>
+									
+									
+									<option value="959" >959</option>
+									
+									
+									<option value="958" >958</option>
+									
+									
+									<option value="957" >957</option>
+									
+									
+									<option value="956" >956</option>
+									
+									
+									<option value="955" >955</option>
+									
+									
+									<option value="954" >954</option>
+									
+									
+									<option value="953" >953</option>
+									
+									
+									<option value="952" >952</option>
+									
+									
+									<option value="951" >951</option>
+									
+									
+									<option value="950" >950</option>
+									
+									
+									<option value="949" >949</option>
+									
+									
+									<option value="948" >948</option>
+									
+									
+									<option value="947" >947</option>
+									
+									
+									<option value="946" >946</option>
+									
+									
+									<option value="945" >945</option>
+									
+									
+									<option value="944" >944</option>
+									
+									
+									<option value="943" >943</option>
+									
+									
+									<option value="942" >942</option>
+									
+									
+									<option value="941" >941</option>
+									
+									
+									<option value="940" >940</option>
+									
+									
+									<option value="939" >939</option>
+									
+									
+									<option value="938" >938</option>
+									
+									
+									<option value="937" >937</option>
+									
+									
+									<option value="936" >936</option>
+									
+									
+									<option value="935" >935</option>
+									
+									
+									<option value="934" >934</option>
+									
+									
+									<option value="933" >933</option>
+									
+									
+									<option value="932" >932</option>
+									
+									
+									<option value="931" >931</option>
+									
+									
+									<option value="930" >930</option>
+									
+									
+									<option value="929" >929</option>
+									
+									
+									<option value="928" >928</option>
+									
+									
+									<option value="927" >927</option>
+									
+									
+									<option value="926" >926</option>
+									
+									
+									<option value="925" >925</option>
+									
+									
+									<option value="924" >924</option>
+									
+									
+									<option value="923" >923</option>
+									
+									
+									<option value="922" >922</option>
+									
+									
+									<option value="921" >921</option>
+									
+									
+									<option value="920" >920</option>
+									
+									
+									<option value="919" >919</option>
+									
+									
+									<option value="918" >918</option>
+									
+									
+									<option value="917" >917</option>
+									
+									
+									<option value="916" >916</option>
+									
+									
+									<option value="915" >915</option>
+									
+									
+									<option value="914" >914</option>
+									
+									
+									<option value="913" >913</option>
+									
+									
+									<option value="912" >912</option>
+									
+									
+									<option value="911" >911</option>
+									
+									
+									<option value="910" >910</option>
+									
+									
+									<option value="909" >909</option>
+									
+									
+									<option value="908" >908</option>
+									
+									
+									<option value="907" >907</option>
+									
+									
+									<option value="906" >906</option>
+									
+									
+									<option value="905" >905</option>
+									
+									
+									<option value="904" >904</option>
+									
+									
+									<option value="903" >903</option>
+									
+									
+									<option value="902" >902</option>
+									
+									
+									<option value="901" >901</option>
+									
+									
+									<option value="900" >900</option>
+									
+									
+									<option value="899" >899</option>
+									
+									
+									<option value="898" >898</option>
+									
+									
+									<option value="897" >897</option>
+									
+									
+									<option value="896" >896</option>
+									
+									
+									<option value="895" >895</option>
+									
+									
+									<option value="894" >894</option>
+									
+									
+									<option value="893" >893</option>
+									
+									
+									<option value="892" >892</option>
+									
+									
+									<option value="891" >891</option>
+									
+									
+									<option value="890" >890</option>
+									
+									
+									<option value="889" >889</option>
+									
+									
+									<option value="888" >888</option>
+									
+									
+									<option value="887" >887</option>
+									
+									
+									<option value="886" >886</option>
+									
+									
+									<option value="885" >885</option>
+									
+									
+									<option value="884" >884</option>
+									
+									
+									<option value="883" >883</option>
+									
+									
+									<option value="882" >882</option>
+									
+									
+									<option value="881" >881</option>
+									
+									
+									<option value="880" >880</option>
+									
+									
+									<option value="879" >879</option>
+									
+									
+									<option value="878" >878</option>
+									
+									
+									<option value="877" >877</option>
+									
+									
+									<option value="876" >876</option>
+									
+									
+									<option value="875" >875</option>
+									
+									
+									<option value="874" >874</option>
+									
+									
+									<option value="873" >873</option>
+									
+									
+									<option value="872" >872</option>
+									
+									
+									<option value="871" >871</option>
+									
+									
+									<option value="870" >870</option>
+									
+									
+									<option value="869" >869</option>
+									
+									
+									<option value="868" >868</option>
+									
+									
+									<option value="867" >867</option>
+									
+									
+									<option value="866" >866</option>
+									
+									
+									<option value="865" >865</option>
+									
+									
+									<option value="864" >864</option>
+									
+									
+									<option value="863" >863</option>
+									
+									
+									<option value="862" >862</option>
+									
+									
+									<option value="861" >861</option>
+									
+									
+									<option value="860" >860</option>
+									
+									
+									<option value="859" >859</option>
+									
+									
+									<option value="858" >858</option>
+									
+									
+									<option value="857" >857</option>
+									
+									
+									<option value="856" >856</option>
+									
+									
+									<option value="855" >855</option>
+									
+									
+									<option value="854" >854</option>
+									
+									
+									<option value="853" >853</option>
+									
+									
+									<option value="852" >852</option>
+									
+									
+									<option value="851" >851</option>
+									
+									
+									<option value="850" >850</option>
+									
+									
+									<option value="849" >849</option>
+									
+									
+									<option value="848" >848</option>
+									
+									
+									<option value="847" >847</option>
+									
+									
+									<option value="846" >846</option>
+									
+									
+									<option value="845" >845</option>
+									
+									
+									<option value="844" >844</option>
+									
+									
+									<option value="843" >843</option>
+									
+									
+									<option value="842" >842</option>
+									
+									
+									<option value="841" >841</option>
+									
+									
+									<option value="840" >840</option>
+									
+									
+									<option value="839" >839</option>
+									
+									
+									<option value="838" >838</option>
+									
+									
+									<option value="837" >837</option>
+									
+									
+									<option value="836" >836</option>
+									
+									
+									<option value="835" >835</option>
+									
+									
+									<option value="834" >834</option>
+									
+									
+									<option value="833" >833</option>
+									
+									
+									<option value="832" >832</option>
+									
+									
+									<option value="831" >831</option>
+									
+									
+									<option value="830" >830</option>
+									
+									
+									<option value="829" >829</option>
+									
+									
+									<option value="828" >828</option>
+									
+									
+									<option value="827" >827</option>
+									
+									
+									<option value="826" >826</option>
+									
+									
+									<option value="825" >825</option>
+									
+									
+									<option value="824" >824</option>
+									
+									
+									<option value="823" >823</option>
+									
+									
+									<option value="822" >822</option>
+									
+									
+									<option value="821" >821</option>
+									
+									
+									<option value="820" >820</option>
+									
+									
+									<option value="819" >819</option>
+									
+									
+									<option value="818" >818</option>
+									
+									
+									<option value="817" >817</option>
+									
+									
+									<option value="816" >816</option>
+									
+									
+									<option value="815" >815</option>
+									
+									
+									<option value="814" >814</option>
+									
+									
+									<option value="813" >813</option>
+									
+									
+									<option value="812" >812</option>
+									
+									
+									<option value="811" >811</option>
+									
+									
+									<option value="810" >810</option>
+									
+									
+									<option value="809" >809</option>
+									
+									
+									<option value="808" >808</option>
+									
+									
+									<option value="807" >807</option>
+									
+									
+									<option value="806" >806</option>
+									
+									
+									<option value="805" >805</option>
+									
+									
+									<option value="804" >804</option>
+									
+									
+									<option value="803" >803</option>
+									
+									
+									<option value="802" >802</option>
+									
+									
+									<option value="801" >801</option>
+									
+									
+									<option value="800" >800</option>
+									
+									
+									<option value="799" >799</option>
+									
+									
+									<option value="798" >798</option>
+									
+									
+									<option value="797" >797</option>
+									
+									
+									<option value="796" >796</option>
+									
+									
+									<option value="795" >795</option>
+									
+									
+									<option value="794" >794</option>
+									
+									
+									<option value="793" >793</option>
+									
+									
+									<option value="792" >792</option>
+									
+									
+									<option value="791" >791</option>
+									
+									
+									<option value="790" >790</option>
+									
+									
+									<option value="789" >789</option>
+									
+									
+									<option value="788" >788</option>
+									
+									
+									<option value="787" >787</option>
+									
+									
+									<option value="786" >786</option>
+									
+									
+									<option value="785" >785</option>
+									
+									
+									<option value="784" >784</option>
+									
+									
+									<option value="783" >783</option>
+									
+									
+									<option value="782" >782</option>
+									
+									
+									<option value="781" >781</option>
+									
+									
+									<option value="780" >780</option>
+									
+									
+									<option value="779" >779</option>
+									
+									
+									<option value="778" >778</option>
+									
+									
+									<option value="777" >777</option>
+									
+									
+									<option value="776" >776</option>
+									
+									
+									<option value="775" >775</option>
+									
+									
+									<option value="774" >774</option>
+									
+									
+									<option value="773" >773</option>
+									
+									
+									<option value="772" >772</option>
+									
+									
+									<option value="771" >771</option>
+									
+									
+									<option value="770" >770</option>
+									
+									
+									<option value="769" >769</option>
+									
+									
+									<option value="768" >768</option>
+									
+									
+									<option value="767" >767</option>
+									
+									
+									<option value="766" >766</option>
+									
+									
+									<option value="765" >765</option>
+									
+									
+									<option value="764" >764</option>
+									
+									
+									<option value="763" >763</option>
+									
+									
+									<option value="762" >762</option>
+									
+									
+									<option value="761" >761</option>
+									
+									
+									<option value="760" >760</option>
+									
+									
+									<option value="759" >759</option>
+									
+									
+									<option value="758" >758</option>
+									
+									
+									<option value="757" >757</option>
+									
+									
+									<option value="756" >756</option>
+									
+									
+									<option value="755" >755</option>
+									
+									
+									<option value="754" >754</option>
+									
+									
+									<option value="753" >753</option>
+									
+									
+									<option value="752" >752</option>
+									
+									
+									<option value="751" >751</option>
+									
+									
+									<option value="750" >750</option>
+									
+									
+									<option value="749" >749</option>
+									
+									
+									<option value="748" >748</option>
+									
+									
+									<option value="747" >747</option>
+									
+									
+									<option value="746" >746</option>
+									
+									
+									<option value="745" >745</option>
+									
+									
+									<option value="744" >744</option>
+									
+									
+									<option value="743" >743</option>
+									
+									
+									<option value="742" >742</option>
+									
+									
+									<option value="741" >741</option>
+									
+									
+									<option value="740" >740</option>
+									
+									
+									<option value="739" >739</option>
+									
+									
+									<option value="738" >738</option>
+									
+									
+									<option value="737" >737</option>
+									
+									
+									<option value="736" >736</option>
+									
+									
+									<option value="735" >735</option>
+									
+									
+									<option value="734" >734</option>
+									
+									
+									<option value="733" >733</option>
+									
+									
+									<option value="732" >732</option>
+									
+									
+									<option value="731" >731</option>
+									
+									
+									<option value="730" >730</option>
+									
+									
+									<option value="729" >729</option>
+									
+									
+									<option value="728" >728</option>
+									
+									
+									<option value="727" >727</option>
+									
+									
+									<option value="726" >726</option>
+									
+									
+									<option value="725" >725</option>
+									
+									
+									<option value="724" >724</option>
+									
+									
+									<option value="723" >723</option>
+									
+									
+									<option value="722" >722</option>
+									
+									
+									<option value="721" >721</option>
+									
+									
+									<option value="720" >720</option>
+									
+									
+									<option value="719" >719</option>
+									
+									
+									<option value="718" >718</option>
+									
+									
+									<option value="717" >717</option>
+									
+									
+									<option value="716" >716</option>
+									
+									
+									<option value="715" >715</option>
+									
+									
+									<option value="714" >714</option>
+									
+									
+									<option value="713" >713</option>
+									
+									
+									<option value="712" >712</option>
+									
+									
+									<option value="711" >711</option>
+									
+									
+									<option value="710" >710</option>
+									
+									
+									<option value="709" >709</option>
+									
+									
+									<option value="708" >708</option>
+									
+									
+									<option value="707" >707</option>
+									
+									
+									<option value="706" >706</option>
+									
+									
+									<option value="705" >705</option>
+									
+									
+									<option value="704" >704</option>
+									
+									
+									<option value="703" >703</option>
+									
+									
+									<option value="702" >702</option>
+									
+									
+									<option value="701" >701</option>
+									
+									
+									<option value="700" >700</option>
+									
+									
+									<option value="699" >699</option>
+									
+									
+									<option value="698" >698</option>
+									
+									
+									<option value="697" >697</option>
+									
+									
+									<option value="696" >696</option>
+									
+									
+									<option value="695" >695</option>
+									
+									
+									<option value="694" >694</option>
+									
+									
+									<option value="693" >693</option>
+									
+									
+									<option value="692" >692</option>
+									
+									
+									<option value="691" >691</option>
+									
+									
+									<option value="690" >690</option>
+									
+									
+									<option value="689" >689</option>
+									
+									
+									<option value="688" >688</option>
+									
+									
+									<option value="687" >687</option>
+									
+									
+									<option value="686" >686</option>
+									
+									
+									<option value="685" >685</option>
+									
+									
+									<option value="684" >684</option>
+									
+									
+									<option value="683" >683</option>
+									
+									
+									<option value="682" >682</option>
+									
+									
+									<option value="681" >681</option>
+									
+									
+									<option value="680" >680</option>
+									
+									
+									<option value="679" >679</option>
+									
+									
+									<option value="678" >678</option>
+									
+									
+									<option value="677" >677</option>
+									
+									
+									<option value="676" >676</option>
+									
+									
+									<option value="675" >675</option>
+									
+									
+									<option value="674" >674</option>
+									
+									
+									<option value="673" >673</option>
+									
+									
+									<option value="672" >672</option>
+									
+									
+									<option value="671" >671</option>
+									
+									
+									<option value="670" >670</option>
+									
+									
+									<option value="669" >669</option>
+									
+									
+									<option value="668" >668</option>
+									
+									
+									<option value="667" >667</option>
+									
+									
+									<option value="666" >666</option>
+									
+									
+									<option value="665" >665</option>
+									
+									
+									<option value="664" >664</option>
+									
+									
+									<option value="663" >663</option>
+									
+									
+									<option value="662" >662</option>
+									
+									
+									<option value="661" >661</option>
+									
+									
+									<option value="660" >660</option>
+									
+									
+									<option value="659" >659</option>
+									
+									
+									<option value="658" >658</option>
+									
+									
+									<option value="657" >657</option>
+									
+									
+									<option value="656" >656</option>
+									
+									
+									<option value="655" >655</option>
+									
+									
+									<option value="654" >654</option>
+									
+									
+									<option value="653" >653</option>
+									
+									
+									<option value="652" >652</option>
+									
+									
+									<option value="651" >651</option>
+									
+									
+									<option value="650" >650</option>
+									
+									
+									<option value="649" >649</option>
+									
+									
+									<option value="648" >648</option>
+									
+									
+									<option value="647" >647</option>
+									
+									
+									<option value="646" >646</option>
+									
+									
+									<option value="645" >645</option>
+									
+									
+									<option value="644" >644</option>
+									
+									
+									<option value="643" >643</option>
+									
+									
+									<option value="642" >642</option>
+									
+									
+									<option value="641" >641</option>
+									
+									
+									<option value="640" >640</option>
+									
+									
+									<option value="639" >639</option>
+									
+									
+									<option value="638" >638</option>
+									
+									
+									<option value="637" >637</option>
+									
+									
+									<option value="636" >636</option>
+									
+									
+									<option value="635" >635</option>
+									
+									
+									<option value="634" >634</option>
+									
+									
+									<option value="633" >633</option>
+									
+									
+									<option value="632" >632</option>
+									
+									
+									<option value="631" >631</option>
+									
+									
+									<option value="630" >630</option>
+									
+									
+									<option value="629" >629</option>
+									
+									
+									<option value="628" >628</option>
+									
+									
+									<option value="627" >627</option>
+									
+									
+									<option value="626" >626</option>
+									
+									
+									<option value="625" >625</option>
+									
+									
+									<option value="624" >624</option>
+									
+									
+									<option value="623" >623</option>
+									
+									
+									<option value="622" >622</option>
+									
+									
+									<option value="621" >621</option>
+									
+									
+									<option value="620" >620</option>
+									
+									
+									<option value="619" >619</option>
+									
+									
+									<option value="618" >618</option>
+									
+									
+									<option value="617" >617</option>
+									
+									
+									<option value="616" >616</option>
+									
+									
+									<option value="615" >615</option>
+									
+									
+									<option value="614" >614</option>
+									
+									
+									<option value="613" >613</option>
+									
+									
+									<option value="612" >612</option>
+									
+									
+									<option value="611" >611</option>
+									
+									
+									<option value="610" >610</option>
+									
+									
+									<option value="609" >609</option>
+									
+									
+									<option value="608" >608</option>
+									
+									
+									<option value="607" >607</option>
+									
+									
+									<option value="606" >606</option>
+									
+									
+									<option value="605" >605</option>
+									
+									
+									<option value="604" >604</option>
+									
+									
+									<option value="603" >603</option>
+									
+									
+									<option value="602" >602</option>
+									
+									
+									<option value="601" >601</option>
+									
+									
+								
+							
+							</select>
+							<span class="unit">����</span>
+							<select id="drwNoEnd" name="drwNoEnd" title="���,���� �ٿ� ����ȸ�� ����">
+								
+								
+								
+									
+									
+									<option value="1146" selected>1146</option>
+									
+									
+									<option value="1145" >1145</option>
+									
+									
+									<option value="1144" >1144</option>
+									
+									
+									<option value="1143" >1143</option>
+									
+									
+									<option value="1142" >1142</option>
+									
+									
+									<option value="1141" >1141</option>
+									
+									
+									<option value="1140" >1140</option>
+									
+									
+									<option value="1139" >1139</option>
+									
+									
+									<option value="1138" >1138</option>
+									
+									
+									<option value="1137" >1137</option>
+									
+									
+									<option value="1136" >1136</option>
+									
+									
+									<option value="1135" >1135</option>
+									
+									
+									<option value="1134" >1134</option>
+									
+									
+									<option value="1133" >1133</option>
+									
+									
+									<option value="1132" >1132</option>
+									
+									
+									<option value="1131" >1131</option>
+									
+									
+									<option value="1130" >1130</option>
+									
+									
+									<option value="1129" >1129</option>
+									
+									
+									<option value="1128" >1128</option>
+									
+									
+									<option value="1127" >1127</option>
+									
+									
+									<option value="1126" >1126</option>
+									
+									
+									<option value="1125" >1125</option>
+									
+									
+									<option value="1124" >1124</option>
+									
+									
+									<option value="1123" >1123</option>
+									
+									
+									<option value="1122" >1122</option>
+									
+									
+									<option value="1121" >1121</option>
+									
+									
+									<option value="1120" >1120</option>
+									
+									
+									<option value="1119" >1119</option>
+									
+									
+									<option value="1118" >1118</option>
+									
+									
+									<option value="1117" >1117</option>
+									
+									
+									<option value="1116" >1116</option>
+									
+									
+									<option value="1115" >1115</option>
+									
+									
+									<option value="1114" >1114</option>
+									
+									
+									<option value="1113" >1113</option>
+									
+									
+									<option value="1112" >1112</option>
+									
+									
+									<option value="1111" >1111</option>
+									
+									
+									<option value="1110" >1110</option>
+									
+									
+									<option value="1109" >1109</option>
+									
+									
+									<option value="1108" >1108</option>
+									
+									
+									<option value="1107" >1107</option>
+									
+									
+									<option value="1106" >1106</option>
+									
+									
+									<option value="1105" >1105</option>
+									
+									
+									<option value="1104" >1104</option>
+									
+									
+									<option value="1103" >1103</option>
+									
+									
+									<option value="1102" >1102</option>
+									
+									
+									<option value="1101" >1101</option>
+									
+									
+									<option value="1100" >1100</option>
+									
+									
+									<option value="1099" >1099</option>
+									
+									
+									<option value="1098" >1098</option>
+									
+									
+									<option value="1097" >1097</option>
+									
+									
+									<option value="1096" >1096</option>
+									
+									
+									<option value="1095" >1095</option>
+									
+									
+									<option value="1094" >1094</option>
+									
+									
+									<option value="1093" >1093</option>
+									
+									
+									<option value="1092" >1092</option>
+									
+									
+									<option value="1091" >1091</option>
+									
+									
+									<option value="1090" >1090</option>
+									
+									
+									<option value="1089" >1089</option>
+									
+									
+									<option value="1088" >1088</option>
+									
+									
+									<option value="1087" >1087</option>
+									
+									
+									<option value="1086" >1086</option>
+									
+									
+									<option value="1085" >1085</option>
+									
+									
+									<option value="1084" >1084</option>
+									
+									
+									<option value="1083" >1083</option>
+									
+									
+									<option value="1082" >1082</option>
+									
+									
+									<option value="1081" >1081</option>
+									
+									
+									<option value="1080" >1080</option>
+									
+									
+									<option value="1079" >1079</option>
+									
+									
+									<option value="1078" >1078</option>
+									
+									
+									<option value="1077" >1077</option>
+									
+									
+									<option value="1076" >1076</option>
+									
+									
+									<option value="1075" >1075</option>
+									
+									
+									<option value="1074" >1074</option>
+									
+									
+									<option value="1073" >1073</option>
+									
+									
+									<option value="1072" >1072</option>
+									
+									
+									<option value="1071" >1071</option>
+									
+									
+									<option value="1070" >1070</option>
+									
+									
+									<option value="1069" >1069</option>
+									
+									
+									<option value="1068" >1068</option>
+									
+									
+									<option value="1067" >1067</option>
+									
+									
+									<option value="1066" >1066</option>
+									
+									
+									<option value="1065" >1065</option>
+									
+									
+									<option value="1064" >1064</option>
+									
+									
+									<option value="1063" >1063</option>
+									
+									
+									<option value="1062" >1062</option>
+									
+									
+									<option value="1061" >1061</option>
+									
+									
+									<option value="1060" >1060</option>
+									
+									
+									<option value="1059" >1059</option>
+									
+									
+									<option value="1058" >1058</option>
+									
+									
+									<option value="1057" >1057</option>
+									
+									
+									<option value="1056" >1056</option>
+									
+									
+									<option value="1055" >1055</option>
+									
+									
+									<option value="1054" >1054</option>
+									
+									
+									<option value="1053" >1053</option>
+									
+									
+									<option value="1052" >1052</option>
+									
+									
+									<option value="1051" >1051</option>
+									
+									
+									<option value="1050" >1050</option>
+									
+									
+									<option value="1049" >1049</option>
+									
+									
+									<option value="1048" >1048</option>
+									
+									
+									<option value="1047" >1047</option>
+									
+									
+									<option value="1046" >1046</option>
+									
+									
+									<option value="1045" >1045</option>
+									
+									
+									<option value="1044" >1044</option>
+									
+									
+									<option value="1043" >1043</option>
+									
+									
+									<option value="1042" >1042</option>
+									
+									
+									<option value="1041" >1041</option>
+									
+									
+									<option value="1040" >1040</option>
+									
+									
+									<option value="1039" >1039</option>
+									
+									
+									<option value="1038" >1038</option>
+									
+									
+									<option value="1037" >1037</option>
+									
+									
+									<option value="1036" >1036</option>
+									
+									
+									<option value="1035" >1035</option>
+									
+									
+									<option value="1034" >1034</option>
+									
+									
+									<option value="1033" >1033</option>
+									
+									
+									<option value="1032" >1032</option>
+									
+									
+									<option value="1031" >1031</option>
+									
+									
+									<option value="1030" >1030</option>
+									
+									
+									<option value="1029" >1029</option>
+									
+									
+									<option value="1028" >1028</option>
+									
+									
+									<option value="1027" >1027</option>
+									
+									
+									<option value="1026" >1026</option>
+									
+									
+									<option value="1025" >1025</option>
+									
+									
+									<option value="1024" >1024</option>
+									
+									
+									<option value="1023" >1023</option>
+									
+									
+									<option value="1022" >1022</option>
+									
+									
+									<option value="1021" >1021</option>
+									
+									
+									<option value="1020" >1020</option>
+									
+									
+									<option value="1019" >1019</option>
+									
+									
+									<option value="1018" >1018</option>
+									
+									
+									<option value="1017" >1017</option>
+									
+									
+									<option value="1016" >1016</option>
+									
+									
+									<option value="1015" >1015</option>
+									
+									
+									<option value="1014" >1014</option>
+									
+									
+									<option value="1013" >1013</option>
+									
+									
+									<option value="1012" >1012</option>
+									
+									
+									<option value="1011" >1011</option>
+									
+									
+									<option value="1010" >1010</option>
+									
+									
+									<option value="1009" >1009</option>
+									
+									
+									<option value="1008" >1008</option>
+									
+									
+									<option value="1007" >1007</option>
+									
+									
+									<option value="1006" >1006</option>
+									
+									
+									<option value="1005" >1005</option>
+									
+									
+									<option value="1004" >1004</option>
+									
+									
+									<option value="1003" >1003</option>
+									
+									
+									<option value="1002" >1002</option>
+									
+									
+									<option value="1001" >1001</option>
+									
+									
+									<option value="1000" >1000</option>
+									
+									
+									<option value="999" >999</option>
+									
+									
+									<option value="998" >998</option>
+									
+									
+									<option value="997" >997</option>
+									
+									
+									<option value="996" >996</option>
+									
+									
+									<option value="995" >995</option>
+									
+									
+									<option value="994" >994</option>
+									
+									
+									<option value="993" >993</option>
+									
+									
+									<option value="992" >992</option>
+									
+									
+									<option value="991" >991</option>
+									
+									
+									<option value="990" >990</option>
+									
+									
+									<option value="989" >989</option>
+									
+									
+									<option value="988" >988</option>
+									
+									
+									<option value="987" >987</option>
+									
+									
+									<option value="986" >986</option>
+									
+									
+									<option value="985" >985</option>
+									
+									
+									<option value="984" >984</option>
+									
+									
+									<option value="983" >983</option>
+									
+									
+									<option value="982" >982</option>
+									
+									
+									<option value="981" >981</option>
+									
+									
+									<option value="980" >980</option>
+									
+									
+									<option value="979" >979</option>
+									
+									
+									<option value="978" >978</option>
+									
+									
+									<option value="977" >977</option>
+									
+									
+									<option value="976" >976</option>
+									
+									
+									<option value="975" >975</option>
+									
+									
+									<option value="974" >974</option>
+									
+									
+									<option value="973" >973</option>
+									
+									
+									<option value="972" >972</option>
+									
+									
+									<option value="971" >971</option>
+									
+									
+									<option value="970" >970</option>
+									
+									
+									<option value="969" >969</option>
+									
+									
+									<option value="968" >968</option>
+									
+									
+									<option value="967" >967</option>
+									
+									
+									<option value="966" >966</option>
+									
+									
+									<option value="965" >965</option>
+									
+									
+									<option value="964" >964</option>
+									
+									
+									<option value="963" >963</option>
+									
+									
+									<option value="962" >962</option>
+									
+									
+									<option value="961" >961</option>
+									
+									
+									<option value="960" >960</option>
+									
+									
+									<option value="959" >959</option>
+									
+									
+									<option value="958" >958</option>
+									
+									
+									<option value="957" >957</option>
+									
+									
+									<option value="956" >956</option>
+									
+									
+									<option value="955" >955</option>
+									
+									
+									<option value="954" >954</option>
+									
+									
+									<option value="953" >953</option>
+									
+									
+									<option value="952" >952</option>
+									
+									
+									<option value="951" >951</option>
+									
+									
+									<option value="950" >950</option>
+									
+									
+									<option value="949" >949</option>
+									
+									
+									<option value="948" >948</option>
+									
+									
+									<option value="947" >947</option>
+									
+									
+									<option value="946" >946</option>
+									
+									
+									<option value="945" >945</option>
+									
+									
+									<option value="944" >944</option>
+									
+									
+									<option value="943" >943</option>
+									
+									
+									<option value="942" >942</option>
+									
+									
+									<option value="941" >941</option>
+									
+									
+									<option value="940" >940</option>
+									
+									
+									<option value="939" >939</option>
+									
+									
+									<option value="938" >938</option>
+									
+									
+									<option value="937" >937</option>
+									
+									
+									<option value="936" >936</option>
+									
+									
+									<option value="935" >935</option>
+									
+									
+									<option value="934" >934</option>
+									
+									
+									<option value="933" >933</option>
+									
+									
+									<option value="932" >932</option>
+									
+									
+									<option value="931" >931</option>
+									
+									
+									<option value="930" >930</option>
+									
+									
+									<option value="929" >929</option>
+									
+									
+									<option value="928" >928</option>
+									
+									
+									<option value="927" >927</option>
+									
+									
+									<option value="926" >926</option>
+									
+									
+									<option value="925" >925</option>
+									
+									
+									<option value="924" >924</option>
+									
+									
+									<option value="923" >923</option>
+									
+									
+									<option value="922" >922</option>
+									
+									
+									<option value="921" >921</option>
+									
+									
+									<option value="920" >920</option>
+									
+									
+									<option value="919" >919</option>
+									
+									
+									<option value="918" >918</option>
+									
+									
+									<option value="917" >917</option>
+									
+									
+									<option value="916" >916</option>
+									
+									
+									<option value="915" >915</option>
+									
+									
+									<option value="914" >914</option>
+									
+									
+									<option value="913" >913</option>
+									
+									
+									<option value="912" >912</option>
+									
+									
+									<option value="911" >911</option>
+									
+									
+									<option value="910" >910</option>
+									
+									
+									<option value="909" >909</option>
+									
+									
+									<option value="908" >908</option>
+									
+									
+									<option value="907" >907</option>
+									
+									
+									<option value="906" >906</option>
+									
+									
+									<option value="905" >905</option>
+									
+									
+									<option value="904" >904</option>
+									
+									
+									<option value="903" >903</option>
+									
+									
+									<option value="902" >902</option>
+									
+									
+									<option value="901" >901</option>
+									
+									
+									<option value="900" >900</option>
+									
+									
+									<option value="899" >899</option>
+									
+									
+									<option value="898" >898</option>
+									
+									
+									<option value="897" >897</option>
+									
+									
+									<option value="896" >896</option>
+									
+									
+									<option value="895" >895</option>
+									
+									
+									<option value="894" >894</option>
+									
+									
+									<option value="893" >893</option>
+									
+									
+									<option value="892" >892</option>
+									
+									
+									<option value="891" >891</option>
+									
+									
+									<option value="890" >890</option>
+									
+									
+									<option value="889" >889</option>
+									
+									
+									<option value="888" >888</option>
+									
+									
+									<option value="887" >887</option>
+									
+									
+									<option value="886" >886</option>
+									
+									
+									<option value="885" >885</option>
+									
+									
+									<option value="884" >884</option>
+									
+									
+									<option value="883" >883</option>
+									
+									
+									<option value="882" >882</option>
+									
+									
+									<option value="881" >881</option>
+									
+									
+									<option value="880" >880</option>
+									
+									
+									<option value="879" >879</option>
+									
+									
+									<option value="878" >878</option>
+									
+									
+									<option value="877" >877</option>
+									
+									
+									<option value="876" >876</option>
+									
+									
+									<option value="875" >875</option>
+									
+									
+									<option value="874" >874</option>
+									
+									
+									<option value="873" >873</option>
+									
+									
+									<option value="872" >872</option>
+									
+									
+									<option value="871" >871</option>
+									
+									
+									<option value="870" >870</option>
+									
+									
+									<option value="869" >869</option>
+									
+									
+									<option value="868" >868</option>
+									
+									
+									<option value="867" >867</option>
+									
+									
+									<option value="866" >866</option>
+									
+									
+									<option value="865" >865</option>
+									
+									
+									<option value="864" >864</option>
+									
+									
+									<option value="863" >863</option>
+									
+									
+									<option value="862" >862</option>
+									
+									
+									<option value="861" >861</option>
+									
+									
+									<option value="860" >860</option>
+									
+									
+									<option value="859" >859</option>
+									
+									
+									<option value="858" >858</option>
+									
+									
+									<option value="857" >857</option>
+									
+									
+									<option value="856" >856</option>
+									
+									
+									<option value="855" >855</option>
+									
+									
+									<option value="854" >854</option>
+									
+									
+									<option value="853" >853</option>
+									
+									
+									<option value="852" >852</option>
+									
+									
+									<option value="851" >851</option>
+									
+									
+									<option value="850" >850</option>
+									
+									
+									<option value="849" >849</option>
+									
+									
+									<option value="848" >848</option>
+									
+									
+									<option value="847" >847</option>
+									
+									
+									<option value="846" >846</option>
+									
+									
+									<option value="845" >845</option>
+									
+									
+									<option value="844" >844</option>
+									
+									
+									<option value="843" >843</option>
+									
+									
+									<option value="842" >842</option>
+									
+									
+									<option value="841" >841</option>
+									
+									
+									<option value="840" >840</option>
+									
+									
+									<option value="839" >839</option>
+									
+									
+									<option value="838" >838</option>
+									
+									
+									<option value="837" >837</option>
+									
+									
+									<option value="836" >836</option>
+									
+									
+									<option value="835" >835</option>
+									
+									
+									<option value="834" >834</option>
+									
+									
+									<option value="833" >833</option>
+									
+									
+									<option value="832" >832</option>
+									
+									
+									<option value="831" >831</option>
+									
+									
+									<option value="830" >830</option>
+									
+									
+									<option value="829" >829</option>
+									
+									
+									<option value="828" >828</option>
+									
+									
+									<option value="827" >827</option>
+									
+									
+									<option value="826" >826</option>
+									
+									
+									<option value="825" >825</option>
+									
+									
+									<option value="824" >824</option>
+									
+									
+									<option value="823" >823</option>
+									
+									
+									<option value="822" >822</option>
+									
+									
+									<option value="821" >821</option>
+									
+									
+									<option value="820" >820</option>
+									
+									
+									<option value="819" >819</option>
+									
+									
+									<option value="818" >818</option>
+									
+									
+									<option value="817" >817</option>
+									
+									
+									<option value="816" >816</option>
+									
+									
+									<option value="815" >815</option>
+									
+									
+									<option value="814" >814</option>
+									
+									
+									<option value="813" >813</option>
+									
+									
+									<option value="812" >812</option>
+									
+									
+									<option value="811" >811</option>
+									
+									
+									<option value="810" >810</option>
+									
+									
+									<option value="809" >809</option>
+									
+									
+									<option value="808" >808</option>
+									
+									
+									<option value="807" >807</option>
+									
+									
+									<option value="806" >806</option>
+									
+									
+									<option value="805" >805</option>
+									
+									
+									<option value="804" >804</option>
+									
+									
+									<option value="803" >803</option>
+									
+									
+									<option value="802" >802</option>
+									
+									
+									<option value="801" >801</option>
+									
+									
+									<option value="800" >800</option>
+									
+									
+									<option value="799" >799</option>
+									
+									
+									<option value="798" >798</option>
+									
+									
+									<option value="797" >797</option>
+									
+									
+									<option value="796" >796</option>
+									
+									
+									<option value="795" >795</option>
+									
+									
+									<option value="794" >794</option>
+									
+									
+									<option value="793" >793</option>
+									
+									
+									<option value="792" >792</option>
+									
+									
+									<option value="791" >791</option>
+									
+									
+									<option value="790" >790</option>
+									
+									
+									<option value="789" >789</option>
+									
+									
+									<option value="788" >788</option>
+									
+									
+									<option value="787" >787</option>
+									
+									
+									<option value="786" >786</option>
+									
+									
+									<option value="785" >785</option>
+									
+									
+									<option value="784" >784</option>
+									
+									
+									<option value="783" >783</option>
+									
+									
+									<option value="782" >782</option>
+									
+									
+									<option value="781" >781</option>
+									
+									
+									<option value="780" >780</option>
+									
+									
+									<option value="779" >779</option>
+									
+									
+									<option value="778" >778</option>
+									
+									
+									<option value="777" >777</option>
+									
+									
+									<option value="776" >776</option>
+									
+									
+									<option value="775" >775</option>
+									
+									
+									<option value="774" >774</option>
+									
+									
+									<option value="773" >773</option>
+									
+									
+									<option value="772" >772</option>
+									
+									
+									<option value="771" >771</option>
+									
+									
+									<option value="770" >770</option>
+									
+									
+									<option value="769" >769</option>
+									
+									
+									<option value="768" >768</option>
+									
+									
+									<option value="767" >767</option>
+									
+									
+									<option value="766" >766</option>
+									
+									
+									<option value="765" >765</option>
+									
+									
+									<option value="764" >764</option>
+									
+									
+									<option value="763" >763</option>
+									
+									
+									<option value="762" >762</option>
+									
+									
+									<option value="761" >761</option>
+									
+									
+									<option value="760" >760</option>
+									
+									
+									<option value="759" >759</option>
+									
+									
+									<option value="758" >758</option>
+									
+									
+									<option value="757" >757</option>
+									
+									
+									<option value="756" >756</option>
+									
+									
+									<option value="755" >755</option>
+									
+									
+									<option value="754" >754</option>
+									
+									
+									<option value="753" >753</option>
+									
+									
+									<option value="752" >752</option>
+									
+									
+									<option value="751" >751</option>
+									
+									
+									<option value="750" >750</option>
+									
+									
+									<option value="749" >749</option>
+									
+									
+									<option value="748" >748</option>
+									
+									
+									<option value="747" >747</option>
+									
+									
+									<option value="746" >746</option>
+									
+									
+									<option value="745" >745</option>
+									
+									
+									<option value="744" >744</option>
+									
+									
+									<option value="743" >743</option>
+									
+									
+									<option value="742" >742</option>
+									
+									
+									<option value="741" >741</option>
+									
+									
+									<option value="740" >740</option>
+									
+									
+									<option value="739" >739</option>
+									
+									
+									<option value="738" >738</option>
+									
+									
+									<option value="737" >737</option>
+									
+									
+									<option value="736" >736</option>
+									
+									
+									<option value="735" >735</option>
+									
+									
+									<option value="734" >734</option>
+									
+									
+									<option value="733" >733</option>
+									
+									
+									<option value="732" >732</option>
+									
+									
+									<option value="731" >731</option>
+									
+									
+									<option value="730" >730</option>
+									
+									
+									<option value="729" >729</option>
+									
+									
+									<option value="728" >728</option>
+									
+									
+									<option value="727" >727</option>
+									
+									
+									<option value="726" >726</option>
+									
+									
+									<option value="725" >725</option>
+									
+									
+									<option value="724" >724</option>
+									
+									
+									<option value="723" >723</option>
+									
+									
+									<option value="722" >722</option>
+									
+									
+									<option value="721" >721</option>
+									
+									
+									<option value="720" >720</option>
+									
+									
+									<option value="719" >719</option>
+									
+									
+									<option value="718" >718</option>
+									
+									
+									<option value="717" >717</option>
+									
+									
+									<option value="716" >716</option>
+									
+									
+									<option value="715" >715</option>
+									
+									
+									<option value="714" >714</option>
+									
+									
+									<option value="713" >713</option>
+									
+									
+									<option value="712" >712</option>
+									
+									
+									<option value="711" >711</option>
+									
+									
+									<option value="710" >710</option>
+									
+									
+									<option value="709" >709</option>
+									
+									
+									<option value="708" >708</option>
+									
+									
+									<option value="707" >707</option>
+									
+									
+									<option value="706" >706</option>
+									
+									
+									<option value="705" >705</option>
+									
+									
+									<option value="704" >704</option>
+									
+									
+									<option value="703" >703</option>
+									
+									
+									<option value="702" >702</option>
+									
+									
+									<option value="701" >701</option>
+									
+									
+									<option value="700" >700</option>
+									
+									
+									<option value="699" >699</option>
+									
+									
+									<option value="698" >698</option>
+									
+									
+									<option value="697" >697</option>
+									
+									
+									<option value="696" >696</option>
+									
+									
+									<option value="695" >695</option>
+									
+									
+									<option value="694" >694</option>
+									
+									
+									<option value="693" >693</option>
+									
+									
+									<option value="692" >692</option>
+									
+									
+									<option value="691" >691</option>
+									
+									
+									<option value="690" >690</option>
+									
+									
+									<option value="689" >689</option>
+									
+									
+									<option value="688" >688</option>
+									
+									
+									<option value="687" >687</option>
+									
+									
+									<option value="686" >686</option>
+									
+									
+									<option value="685" >685</option>
+									
+									
+									<option value="684" >684</option>
+									
+									
+									<option value="683" >683</option>
+									
+									
+									<option value="682" >682</option>
+									
+									
+									<option value="681" >681</option>
+									
+									
+									<option value="680" >680</option>
+									
+									
+									<option value="679" >679</option>
+									
+									
+									<option value="678" >678</option>
+									
+									
+									<option value="677" >677</option>
+									
+									
+									<option value="676" >676</option>
+									
+									
+									<option value="675" >675</option>
+									
+									
+									<option value="674" >674</option>
+									
+									
+									<option value="673" >673</option>
+									
+									
+									<option value="672" >672</option>
+									
+									
+									<option value="671" >671</option>
+									
+									
+									<option value="670" >670</option>
+									
+									
+									<option value="669" >669</option>
+									
+									
+									<option value="668" >668</option>
+									
+									
+									<option value="667" >667</option>
+									
+									
+									<option value="666" >666</option>
+									
+									
+									<option value="665" >665</option>
+									
+									
+									<option value="664" >664</option>
+									
+									
+									<option value="663" >663</option>
+									
+									
+									<option value="662" >662</option>
+									
+									
+									<option value="661" >661</option>
+									
+									
+									<option value="660" >660</option>
+									
+									
+									<option value="659" >659</option>
+									
+									
+									<option value="658" >658</option>
+									
+									
+									<option value="657" >657</option>
+									
+									
+									<option value="656" >656</option>
+									
+									
+									<option value="655" >655</option>
+									
+									
+									<option value="654" >654</option>
+									
+									
+									<option value="653" >653</option>
+									
+									
+									<option value="652" >652</option>
+									
+									
+									<option value="651" >651</option>
+									
+									
+									<option value="650" >650</option>
+									
+									
+									<option value="649" >649</option>
+									
+									
+									<option value="648" >648</option>
+									
+									
+									<option value="647" >647</option>
+									
+									
+									<option value="646" >646</option>
+									
+									
+									<option value="645" >645</option>
+									
+									
+									<option value="644" >644</option>
+									
+									
+									<option value="643" >643</option>
+									
+									
+									<option value="642" >642</option>
+									
+									
+									<option value="641" >641</option>
+									
+									
+									<option value="640" >640</option>
+									
+									
+									<option value="639" >639</option>
+									
+									
+									<option value="638" >638</option>
+									
+									
+									<option value="637" >637</option>
+									
+									
+									<option value="636" >636</option>
+									
+									
+									<option value="635" >635</option>
+									
+									
+									<option value="634" >634</option>
+									
+									
+									<option value="633" >633</option>
+									
+									
+									<option value="632" >632</option>
+									
+									
+									<option value="631" >631</option>
+									
+									
+									<option value="630" >630</option>
+									
+									
+									<option value="629" >629</option>
+									
+									
+									<option value="628" >628</option>
+									
+									
+									<option value="627" >627</option>
+									
+									
+									<option value="626" >626</option>
+									
+									
+									<option value="625" >625</option>
+									
+									
+									<option value="624" >624</option>
+									
+									
+									<option value="623" >623</option>
+									
+									
+									<option value="622" >622</option>
+									
+									
+									<option value="621" >621</option>
+									
+									
+									<option value="620" >620</option>
+									
+									
+									<option value="619" >619</option>
+									
+									
+									<option value="618" >618</option>
+									
+									
+									<option value="617" >617</option>
+									
+									
+									<option value="616" >616</option>
+									
+									
+									<option value="615" >615</option>
+									
+									
+									<option value="614" >614</option>
+									
+									
+									<option value="613" >613</option>
+									
+									
+									<option value="612" >612</option>
+									
+									
+									<option value="611" >611</option>
+									
+									
+									<option value="610" >610</option>
+									
+									
+									<option value="609" >609</option>
+									
+									
+									<option value="608" >608</option>
+									
+									
+									<option value="607" >607</option>
+									
+									
+									<option value="606" >606</option>
+									
+									
+									<option value="605" >605</option>
+									
+									
+									<option value="604" >604</option>
+									
+									
+									<option value="603" >603</option>
+									
+									
+									<option value="602" >602</option>
+									
+									
+									<option value="601" >601</option>
+									
+									
+								
+							
+							</select>
+							<span class="unit">����</span>
+						</form>
+						<a class="btn_common form" id="printBtn" href="javascript:void(0)" title="��â ����">�μ��ϱ�</a>
+						<a class="btn_common form" id="exelBtn" href="javascript:void(0)">�����ٿ�ε�</a>
+					</div>
+				</div>
+				
+             </div>
+  		</div>
+	</div>
+	
+ 
+	<aside id="asideQuick" class="quic_aside">
+		<a href="#" class="toggle">���޴�����</a>
+		<div class="inner">
+			<ul class="prog">
+				<li class="p0"><a href="/gameResult.do?method=notReceiveInfo">�̼���<br>��÷��</a></li>
+				<li class="p1"><a href="/myPage.do?method=enjoyEval">���Ǻ���<br>��������</a></li>
+				<li class="p2"><a href="/happy.do?method=healthCultureProc">��������<br>ķ����</a></li>
+				<li class="p3"><a href="/user.do?method=campainVow">��������<br>����</a></li>
+				<li class="p4"><a href="/myPage.do?method=campainTest">�ڱ����<br>���α׷�</a></li>
+				<li class="p5"><a href="https://clean.dhlottery.co.kr/" target="_blank" title="��â ����">����<br>Ŭ������</a></li>
+				<li class="p6"><a href="/hero.do?method=info">����<br>�����</a></li>
+			</ul>
+		</div>
+		<div class="top"><a href="#skipnavigation">���ΰ���</a></div>
+	</aside>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var spread;
+			var min4quick = 1420;
+			var bodyw = $("body").prop("clientWidth");
+			var aside = $("#asideQuick");
+			var btn = aside.find(".toggle");
+			$(window).resize(function(){
+				bodyw = $("body").prop("clientWidth");
+				if(bodyw < min4quick){
+					aside.css("right","-86px");
+					aside.addClass("fold");
+					spread = false;
+				}else{
+					aside.css("right","0");
+					aside.removeClass("fold");
+					spread = true;
+				}
+			}).resize();
+			btn.click(function(e){
+				e.preventDefault();
+				if(spread == true){
+					aside.animate({right:-86},300);
+					btn.removeClass("opened");					
+					spread = false;
+				}else{
+					aside.animate({right:0},300);
+					btn.addClass("opened");
+					spread = true;
+				}
+				
+			});
+		});
+	</script>
+
+</section>
+
+
+	
+	
+		
+
+<!--����˾����̾� �߰�-->
+<div class="layer">  
+	<div class="bg"></div>  
+	<div class="layer_area" id="layer1">
+    	<div class="layer_top">�Ʒ� QR �ڵ带 �޴������� �Կ����ּ���.<br>���̹�ũ ���� ���� �������� �̵��մϴ�.</div>
+		<div class="layer_img"><img src="images/event/kbank.jpg"></div>
+		<div class="layer_btn"><a href="#" id="layer_close">�ݱ�</a></div>
+	</div>  
+</div>
+  
+<script type="text/javascript">  
+jQuery(function($){  
+	function layer_open(el){  		
+		$('.layer').fadeIn();
+		var temp = $('#' + el);  
+		if (temp.outerHeight() < $(document).height() ) temp.css('margin-top', '-'+temp.outerHeight()/2+'px');  
+		else temp.css('top', '0px');
+		if (temp.outerWidth() < $(document).width() ) temp.css('margin-left', '-'+temp.outerWidth()/2+'px');  
+		else temp.css('left', '0px');
+	}
+
+	$('#layer_open').click(function(){  
+		layer_open('layer1');  
+		return false;  
+	});  
+	
+	$('#layer_close').click(function(){  
+		$('.layer').fadeOut();  
+		return false;  
+	});
+});  
+</script>
+<!--//����˾����̾� �߰�-->
+
+</div><!-- //pc�� ��� ������ ���� ���δ� ��ũ�� �߰�  -->
+
+<!-- ���Ӵ�� ���̾� -->
+<div id="popWaitConnect" class="wrap_pop_layer" style="display:none">
+	<div class="popup_layer popup_waiting">
+		<div class="header_layer">
+			<h2>���Ӵ�� �ȳ�</h2>
+			<a class="close" href="#">�ݱ�</a>
+		</div>
+		<div class="status">
+			<p class="m1"><strong>���񽺿��� �����</strong>�Դϴ�. <span>��� ������ ���� �ڵ� ���ӵ˴ϴ�.</span></p>
+			<div class="circle"><span>���� �����</span></div>
+			<p class="m2">���� ��� �ο� : <strong id="popWaitCount">�� 1,200��</strong><br>���� ��� �ð� : <strong id="popWaitTime">�� 5�� 30��</strong></p>
+		</div>
+		<div class="noti">
+			<h3>���ǻ���</h3>
+			<ul class="list_text_common">
+				<li>���ΰ�ħ �Ǵ� �ڷΰ��⸦ �ϸ� �ٽ� ���ð��� �ο��˴ϴ�.</li>
+			</ul>
+		</div>
+		<div class="btns_bottom">
+		    <a class="btn_common mid close" href="#">�������</a>
+		</div>
+	</div>
+</div>
+<!-- //���Ӵ�� ���̾� -->
+
+<footer id="footer" class="footer">
+	<!-- <div class="footer_container">
+		<div class="footer_wrap"> -->
+			<h3 class="hide">�ϴܸ޴�</h3>
+			<ul class="foot_menu">
+	            <li class="fisrt"><a id="eeeee" href="/clause.do?method=footerUseClause">�̿���</a></li>
+	            <li><strong><a href="/clause.do?method=footerPrivate">�������� ó����ħ</a></strong></li>
+	            <li><strong><a href="javascript:popup_payment_2();"  onclick="javascript:goWiseLogMain('');">�μ⺹�Ǵ�÷�����ޱ���</a></strong></li>
+ 	        
+	            <li><a href="/clause.do?method=reportCenterList">�ҹ����������Ű�����</a></li>
+	            <li><a href="/company.do?method=footerInfo">��Ź����ڼҰ�</a></li>
+	            <li><a href="javascript:popupEngPage();" onclick="javascript:goWiseLogMain('');">ENGLISH</a></li>
+	        
+	        
+	        </ul>
+			<div class="foot_inner">
+                <div class="foot_txt_wrap">
+					<div class="logo"><div class="inner">
+						<strong class="dh">���ູ��</strong>
+						<a href="javascript:goFacPop()" class="btn_foot" title="��â ����">���������Ȯ��</a>
+					</div></div>
+			        <div class="foot_txt1">
+			        	<p>��Ź����� (��)���ູ�� <span class="ml15">�ּ� : 06719 ���� ���ʱ� ���μ�ȯ�� 2423 �ѿ����� 4��</span> <span class="ml15">�������� 1588-6450</span> <span class="ml15">FAX 02-6933-3063</span></p>
+			        	<p>��ǥ�� : ȫ����  <span class="ml15">����ڵ�Ϲ�ȣ 866-87-00833</span> <span class="ml15">����ǸŻ���ڹ�ȣ : ��2018 - ���Ｍ�� - 2075ȣ</span> <!-- <span class="ml15"><a href="javascript:goFacPop()" class="btn_foot">���������Ȯ�� &gt;</a></span> --></p>
+			        </div>
+			        <div class="foot_txt1">			        	
+			        	<br><p>�� Ȩ�������� �Խõ� �̸��� �ּҰ� �ڵ� �����Ǵ� ���� �ź��ϸ�, �̸� ���ݽ� ������Ÿ����� ���� ó������ �����Ͽ� �ֽñ� �ٶ��ϴ�.</p>
+			        	<p>19�� �̸��� ��� ������ �� ���Ǳ�ݹ����� ���� ������ ������ �� �����ϴ�.</p>
+			        </div>
+			        <div class="foot_txt2">
+			        	<p>�� ����Ʈ�� Internet Explorer 11, Edge, Chrome, Safari �������� ����ȭ�Ǿ� �ֽ��ϴ�.</p>
+			        </div>
+			        <div class="foot_txt2">	
+			           <p>Copyright (c) 2018 ��������ȸ&amp;���ູ��. All rights reserved</p>
+			        </div>		        
+				</div>
+					
+                    <div class="group_inner">
+                        <div class="foot_txt_wrap">
+                            <div class="foot_integrated">
+                                <div style="text-align:left;">
+                                    <img src="/images/layout/certified_mark1.png"  alt="certified_mark1">
+                                </div>                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+				
+		        
+	        
+		<!-- </div>
+	</div> -->
+</footer>
+<!-- //footer -->
+
+<script type="text/javascript">
+	//$$js_import$$("pohe_kr.m.theme.Collapsible", null, "phone");
+	
+	function goFacPop(){
+		window.open('http://www.ftc.go.kr/info/bizinfo/communicationViewPopup.jsp?wrkr_no=8668700833', 'fac' , 'width=730, height=658, left=0, top=0, status=no, toolbar=no, menubar=no, location=no');
+	}
+	
+	function popup_payment_2(){
+		var url = "/jspcall.do?method=call&url=gameResult/paymentStandard720";	
+		commonPop("", url, 817, 750, 'yes');
+	}
+	
+	function popupEngPage(){
+		window.open('/en/html/Introduction.html', 'engPage' , 'width=1277, height=960, left=0, top=0, status=yes, resizable=yes, scrollbars=yes, toolbar=no, menubar=no, location=no');
+	}
+	
+	function popupSalesPage(pageUseYn) {
+		if (pageUseYn == "Y") {
+			var strUrl = "https://sales.dhlottery.co.kr/";
+			var strOption = "width=1280, height=960, top=0, left=0, location=yes, menubar=yes, resizable=yes, scrollbars=yes, status=yes, toolbar=yes";
+			var new_popup = window.open(strUrl, 'salesPage', strOption);			
+		} else {
+			alert("��û�Ⱓ�� �ƴմϴ�.");
+		}
+	}
+	
+	function popup_inform(){
+		var url = "/jspcall.do?method=call&url=gameResult/printLottoSalesInform";	
+		commonPop("", url, 817, 750, 'yes');
+	}	
+</script>
+<script>
+$(document).ready(function(){
+	var valueDefault = $(".topLogin .top_userid").prop('value');  
+	
+	if (valueDefault == '' ) {
+		$(".topLogin .label_id").show();
+	} else {
+		$(".topLogin .label_id").hide();
+	}
+	$(".topLogin label").click(function(){
+		$(this).next().focus();
+	});
+	$(".topLogin input").focus(function(){
+		$(this).prev().hide();
+	});
+	$(".topLogin input").focusout(function(){
+		var value = $(this).prop('value');  
+		
+		if (value == '' ) {
+			$(this).prev().show();
+		} else {
+			return false;
+		}
+	});
+	
+});
+</script>
+	
+
+    
+
+</body>
+</html>
