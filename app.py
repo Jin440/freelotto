@@ -13,7 +13,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-DATABASE_PATH = os.path.join(os.path.dirname(__file__), 'db', 'lotto.db')
+DATABASE_PATH = os.path.join("/app", "db", "lotto.db")
 
 app = Flask(__name__)
 app.register_blueprint(lotto_routes)
