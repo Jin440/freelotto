@@ -1,7 +1,6 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, session
 from backend.lotto_routes import lotto_routes
 from backend.lotto_api import fetch_latest_draw_no, fetch_draw_data
-from backend.lotto_coupon import create_coupon, use_coupon, get_all_coupons, delete_coupon
 from datetime import datetime, timedelta
 from functools import lru_cache, wraps
 from backend.lotto_scraper import fetch_lotto_results
@@ -13,68 +12,123 @@ import logging
 from google.cloud import storage
 
 storage_client = storage.Client()
-
 BUCKET_NAME = "freelotto"
 GCS_DATABASE_PATH = "db/lotto.db"
+LOCAL_DATABASE_PATH = os.path.join(os.path.dirname(__file__), 'backend', 'db', 'lotto.db')
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-LOCAL_DATABASE_PATH = os.path.join(os.path.dirname(__file__), 'tmp_lotto.db')
+conn = sqlite3.connect(LOCAL_DATABASE_PATH)  # 메모리 대신 로컬 DB 사용
 print(f"Database path: {LOCAL_DATABASE_PATH}")
 
 app = Flask(__name__)
 app.register_blueprint(lotto_routes)
 app.secret_key = "781643719382"
 
+def initialize_database():
+    try:
+        # GCS에서 데이터베이스 파일을 다운로드
+        if not os.path.exists(LOCAL_DATABASE_PATH):  # 파일이 없다면 다운로드
+            download_db_from_gcs()
+
+        # 테이블 확인 후, 테이블이 없다면 새로 생성
+        if not tables_exist():
+            logging.warning("No tables found. Initializing tables...")
+            initialize_tables()
+
+        logging.info("Database initialized successfully.")
+
+        # 테이블 상태 확인 (디버깅)
+        check_tables()
+
+        # GCS로 업로드 (업로드 필요시)
+        upload_db_to_gcs()
+
+    except Exception as e:
+        logging.error(f"Error initializing database: {e}")
+        raise
+
 # GCS에서 데이터베이스 파일을 다운로드하는 함수
 def download_db_from_gcs():
     try:
-        # 버킷과 객체 지정
         bucket = storage_client.get_bucket(BUCKET_NAME)
         blob = bucket.blob(GCS_DATABASE_PATH)
+        logging.info(f"Downloading database to: {LOCAL_DATABASE_PATH}")  # 경로 출력
+        blob.download_to_filename(LOCAL_DATABASE_PATH)  # 로컬 경로에 다운로드
 
-        # GCS에서 로컬 경로로 파일 다운로드
-        blob.download_to_filename(LOCAL_DATABASE_PATH)
+        # 다운로드 후 파일 크기 확인
+        file_size = os.path.getsize(LOCAL_DATABASE_PATH)
+        logging.info(f"Downloaded file size: {file_size} bytes")
+
+        if file_size == 0:
+            logging.warning("The downloaded database is empty.")
+        
         logging.info(f"Database downloaded from GCS to {LOCAL_DATABASE_PATH}")
     except Exception as e:
         logging.error(f"Error downloading database from GCS: {e}")
         raise
 
-# GCS에 데이터베이스 파일을 업로드하는 함수
 def upload_db_to_gcs():
     try:
-        # 버킷과 객체 지정
+        logging.info(f"Attempting to upload file from {LOCAL_DATABASE_PATH} to GCS.")
+
+        if not os.path.exists(LOCAL_DATABASE_PATH):
+            raise FileNotFoundError(f"The file at {LOCAL_DATABASE_PATH} was not found.")
+        
         bucket = storage_client.get_bucket(BUCKET_NAME)
         blob = bucket.blob(GCS_DATABASE_PATH)
-
-        # 로컬 데이터베이스 파일을 GCS로 업로드
-        blob.upload_from_filename(LOCAL_DATABASE_PATH)
+        
+        logging.info(f"Uploading database from {LOCAL_DATABASE_PATH} to GCS at {GCS_DATABASE_PATH}")
+        blob.upload_from_filename(LOCAL_DATABASE_PATH)  # 로컬에서 GCS로 업로드
         logging.info(f"Database uploaded to GCS from {LOCAL_DATABASE_PATH}")
     except Exception as e:
         logging.error(f"Error uploading database to GCS: {e}")
         raise
 
-def initialize_database():
-    """
-    데이터베이스 파일이 존재하지 않으면 GCS에서 다운로드하고, 테이블을 초기화합니다.
-    """
+def check_tables():
     try:
-        # GCS에서 데이터베이스 파일을 다운로드
-        download_db_from_gcs()
-
-        # SQLite 데이터베이스 연결
         conn = sqlite3.connect(LOCAL_DATABASE_PATH)
         cursor = conn.cursor()
-        logging.info(f"Connected to database at: {LOCAL_DATABASE_PATH}")
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+        logging.info(f"Tables in the database: {tables}")
+
+        # 테이블이 없으면, 경고 출력
+        if not tables:
+            logging.warning("No tables found in the database.")
+        else:
+            logging.info("Tables found in the database.")
+
+    except sqlite3.Error as e:
+        logging.error(f"Error checking tables: {e}")
+    finally:
+        conn.close()
+
+def tables_exist():
+    """테이블이 존재하는지 확인하는 함수"""
+    conn = sqlite3.connect(LOCAL_DATABASE_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = cursor.fetchall()
+    conn.close()
+    logging.info(f"Tables found: {tables}")  # 테이블 목록 로그 출력
+    return bool(tables)
+
+def initialize_tables():
+    """빈 데이터베이스에서 테이블을 생성하는 함수"""
+    try:
+        conn = sqlite3.connect(LOCAL_DATABASE_PATH)
+        cursor = conn.cursor()
 
         # 테이블 생성 쿼리
-        create_table_query = """
+        cursor.execute("""
         CREATE TABLE IF NOT EXISTS coupons (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             coupon_code TEXT UNIQUE NOT NULL,
             is_used BOOLEAN NOT NULL DEFAULT 0
         );
-
+        """)
+        cursor.execute("""
         CREATE TABLE IF NOT EXISTS coupon_uses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             coupon_id INTEGER NOT NULL,
@@ -83,55 +137,50 @@ def initialize_database():
             used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (coupon_id) REFERENCES coupons (id)
         );
-
+        """)
+        cursor.execute("""
         CREATE TABLE IF NOT EXISTS lotto_draws (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             draw_no INTEGER NOT NULL,
             draw_date TEXT NOT NULL,
             youtube_hashtag TEXT NOT NULL
         );
-        """
-        logging.info("Executing table creation queries...")
-        cursor.executescript(create_table_query)
+        """)
+
+        # 변경 사항 커밋
         conn.commit()
-        logging.info("Database tables created successfully.")
+        logging.info("Database tables initialized successfully.")
+        conn.close()
+
     except sqlite3.Error as e:
-        logging.error(f"Error initializing database: {e}")
+        logging.error(f"Error initializing tables: {e}")
         raise
-    finally:
-        if conn:
-            conn.close()
-            logging.info("Database connection closed.")
 
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        app.logger.info(f"Session status in login_required: {session.get('logged_in')}")  # 세션 상태 확인
-        if not session.get("logged_in"):  # 로그인 여부 확인
-            app.logger.info("Unauthorized access detected. Redirecting to login.")
+        if not session.get("logged_in"):
+            logging.warning(f"Unauthorized access attempt at {request.url} without login.")
             flash("로그인이 필요합니다.")
             return redirect(url_for("admin_login"))
-        app.logger.info("Authorized access granted.")
+        logging.info(f"User logged in, proceeding to {request.url}")
         return f(*args, **kwargs)
     return decorated_function
 
 def query_database(query, params=(), fetch_one=False):
     try:
-        # GCS에서 데이터베이스 파일을 다운로드하여 로컬에서 작업
-        download_db_from_gcs()
-
-        # SQLite 데이터베이스 연결
-        conn = sqlite3.connect(LOCAL_DATABASE_PATH)
-        conn.row_factory = sqlite3.Row
+        logging.info(f"Executing query: {query} with params: {params}")
+        conn = sqlite3.connect(LOCAL_DATABASE_PATH)  # 경로가 정확한지 확인
+        conn.row_factory = sqlite3.Row  # 이 설정을 통해 반환되는 결과를 Row 객체로 설정
         cursor = conn.cursor()
         cursor.execute(query, params)
         conn.commit()
         result = cursor.fetchone() if fetch_one else cursor.fetchall()
 
-        # GCS로 데이터베이스 파일 업로드
-        upload_db_to_gcs()
+        # sqlite.Row 객체를 dict로 변환
+        result = [dict(row) for row in result] if not fetch_one else dict(result)
 
-        conn.close()
+        logging.info(f"Query executed successfully, result: {result}")
         return result
     except sqlite3.Error as e:
         logging.error(f"Database error: {e}")
@@ -156,6 +205,16 @@ def calculate_draw_date(draw_no):
 def get_cached_latest_draw():
     latest_draw_no = fetch_latest_draw_no()
     return fetch_draw_data(latest_draw_no) if latest_draw_no else None
+
+@app.before_first_request
+def initialize_database():
+    try:
+        if not os.path.exists(LOCAL_DATABASE_PATH):  # 파일이 없다면 다운로드
+            download_db_from_gcs()
+        logging.info("Database initialized from GCS.")
+    except Exception as e:
+        logging.error(f"Error initializing database: {e}")
+        raise
 
 @app.template_filter("format_price")
 def format_price(value):
@@ -208,44 +267,45 @@ def home():
 def upload_file():
     if 'file' not in request.files:
         flash("파일이 없습니다.")
+        logging.warning("No file part in the upload request.")
         return redirect(request.url)
 
     file = request.files['file']
-    if file.filename == '':
+    if file.filename == '':  # 파일 이름이 없는 경우
         flash("파일 이름이 없습니다.")
+        logging.warning("No filename provided.")
+        return redirect(request.url)
+
+    # 데이터베이스 파일만 업로드할 수 있도록 제한 (예: 'lotto.db')
+    if file.filename != 'lotto.db':
+        flash("데이터베이스 파일만 업로드할 수 있습니다.")
+        logging.warning(f"Invalid file uploaded: {file.filename}")
         return redirect(request.url)
 
     try:
-        # Google Cloud Storage 버킷 객체 가져오기
-        bucket = client.get_bucket(bucket_name)
-
-        # 파일을 버킷에 업로드
-        blob = bucket.blob(file.filename)
-        blob.upload_from_file(file)
-
+        # GCS에 파일 업로드 (로컬에 임시로 저장한 후 업로드)
+        file.save(LOCAL_DATABASE_PATH)  # 파일을 로컬에 저장
+        upload_db_to_gcs()  # 업로드 함수 호출
+        logging.info(f"Database file {file.filename} successfully uploaded.")
         flash(f"파일 {file.filename}이(가) 성공적으로 업로드되었습니다.")
         return redirect(url_for('index'))
-
     except Exception as e:
+        logging.error(f"Error uploading file {file.filename}: {e}")
         flash(f"파일 업로드 중 오류 발생: {e}")
         return redirect(request.url)
 
+
 # 구글 클라우드 스토리지에서 파일 다운로드 처리
-@app.route("/download/<filename>", methods=["GET"])
-def download_file(filename):
+@app.route("/download/database", methods=["GET"])
+def download_database():
     try:
-        # Google Cloud Storage 버킷 객체 가져오기
-        bucket = client.get_bucket(bucket_name)
-
-        # 파일 객체 가져오기
-        blob = bucket.blob(filename)
-
-        # 파일을 클라이언트로 다운로드
-        return blob.download_as_text()
-
+        # 데이터베이스 파일을 서버로부터 다운로드
+        download_db_from_gcs()
+        return send_file(LOCAL_DATABASE_PATH, as_attachment=True)  # 클라이언트에게 다운로드
     except Exception as e:
-        flash(f"파일 다운로드 중 오류 발생: {e}")
-        return redirect(url_for('index'))
+        logging.error(f"Error downloading database: {e}")
+        flash("파일 다운로드 중 오류 발생")
+        return redirect(url_for("index"))
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
@@ -280,8 +340,7 @@ def admin_logout():
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    # 예상치 못한 예외에 대해서만 처리
-    app.logger.error(f"Unhandled exception: {e}")
+    logging.error(f"Unhandled exception: {e}")
     return {"success": False, "message": "서버 오류가 발생했습니다."}, 500
 
 @app.route("/lotto/coupon", methods=["GET"])
@@ -339,7 +398,7 @@ def save_coupon_usage(coupon_code, youtube_hashtag, selected_numbers):
 
         # 이미 사용된 쿠폰인지 확인
         if is_used:
-            # 특정 해시태그로 동일 쿠폰을 이미 사용했는지 확인
+            # 동일 해시태그로 이미 사용된 쿠폰인지 확인
             existing_use = query_database(
                 "SELECT 1 FROM coupon_uses WHERE coupon_id = ? AND youtube_hashtag = ?",
                 (coupon_id, youtube_hashtag), fetch_one=True
@@ -350,31 +409,6 @@ def save_coupon_usage(coupon_code, youtube_hashtag, selected_numbers):
                     "message": f"이 쿠폰은 이미 유튜브 핸들 '{youtube_hashtag}'로 사용되었습니다."
                 }
 
-            # 현재 해시태그가 사용한 쿠폰 수 확인
-            usage_count = query_database(
-                """
-                SELECT COUNT(*) AS usage_count
-                FROM coupon_uses
-                WHERE youtube_hashtag = ?
-                """,
-                (youtube_hashtag,), fetch_one=True
-            )["usage_count"]
-
-            # 해시태그가 5개 미만의 쿠폰을 사용했다면 중복 사용 불가
-            if usage_count < 5:
-                return {
-                    "success": False,
-                    "message": f"이 핸들 '{youtube_hashtag}'는 5개 이상의 쿠폰을 사용하지 않았습니다. 아직 사용하지 않은 쿠폰을 찾아보세요!"
-                }
-
-        # 회차 계산: fetch_latest_draw_no + 1
-        latest_draw_no = fetch_latest_draw_no()
-        next_draw_no = latest_draw_no + 1 if latest_draw_no else 1
-
-        # 추첨일 계산
-        base_date = datetime(2002, 12, 7)
-        draw_date = base_date + timedelta(weeks=next_draw_no - 1)
-
         # 쿠폰 사용 기록 추가
         query_database(
             """
@@ -384,24 +418,16 @@ def save_coupon_usage(coupon_code, youtube_hashtag, selected_numbers):
             (coupon_id, youtube_hashtag, ','.join(map(str, selected_numbers)))
         )
 
-        # 쿠폰을 사용된 상태로 업데이트
+        # 쿠폰 사용 상태 업데이트
         query_database(
             "UPDATE coupons SET is_used = 1 WHERE id = ?",
             (coupon_id,)
         )
 
-        # 회차와 추첨일을 lotto_draws에 저장
-        query_database(
-            """
-            INSERT INTO lotto_draws (draw_no, draw_date, youtube_hashtag)
-            VALUES (?, ?, ?)
-            """,
-            (next_draw_no, draw_date.strftime('%Y-%m-%d'), youtube_hashtag)
-        )
-
+        # 쿠폰 사용 후 결과 반환
         return {
             "success": True,
-            "message": f"쿠폰 사용 완료. 다음 추첨 회차: {next_draw_no}, 추첨일: {draw_date.strftime('%Y-%m-%d')}",
+            "message": "쿠폰이 성공적으로 사용되었습니다.",
             "selected_numbers": selected_numbers
         }
 
@@ -456,7 +482,20 @@ def submit_coupon():
     if not coupon_code or not youtube_hashtag or not selected_numbers:
         return jsonify({"success": False, "message": "모든 필드를 입력해주세요."})
 
-    return jsonify(save_coupon_usage(coupon_code, youtube_hashtag, selected_numbers))
+    try:
+        # 쿠폰 사용 기록 저장
+        result = save_coupon_usage(coupon_code, youtube_hashtag, selected_numbers)
+
+        if result["success"]:
+            # 쿠폰 사용 후, Cloud Storage로 데이터베이스 업로드
+            upload_db_to_gcs()
+            return jsonify(result)  # 쿠폰 사용 결과 반환
+        else:
+            return jsonify(result)
+
+    except Exception as e:
+        logging.error(f"Error submitting coupon: {e}")
+        return jsonify({"success": False, "message": "서버 오류가 발생했습니다."})
 
 @app.route("/gamerule", methods=["GET"])
 def game_rule():
@@ -516,7 +555,8 @@ def get_coupons_page():
         coupons = query_database("SELECT * FROM coupons")
 
         if request.accept_mimetypes.best == 'application/json':
-            return jsonify({"success": True, "coupons": [dict(coupon) for coupon in coupons]})
+            # JSON으로 반환
+            return jsonify({"success": True, "coupons": coupons})
 
         return render_template("admin_coupons.html", coupons=coupons)
     except Exception as e:
@@ -534,6 +574,10 @@ def create_coupon():
             (coupon_code, False)
         )
         logging.info(f"Coupon created: {coupon_code}")
+        
+        # 쿠폰 생성 후, Cloud Storage로 데이터베이스 업로드
+        upload_db_to_gcs()
+        
         return jsonify({"success": True, "coupon_code": coupon_code})
     except sqlite3.Error as e:
         logging.error(f"Error creating coupon: {e}")
@@ -541,9 +585,6 @@ def create_coupon():
     
 @app.route("/admin/coupons/delete", methods=["POST"])
 def delete_coupon():
-    """
-    쿠폰 삭제 API
-    """
     try:
         data = request.json
         coupon_id = data.get("coupon_id")
@@ -553,6 +594,10 @@ def delete_coupon():
 
         query_database("DELETE FROM coupons WHERE id = ?", (coupon_id,))
         logging.info(f"Coupon deleted: {coupon_id}")
+        
+        # 쿠폰 삭제 후, Cloud Storage로 데이터베이스 업로드
+        upload_db_to_gcs()
+        
         return jsonify({"success": True, "message": f"Coupon ID {coupon_id} deleted."})
     except sqlite3.Error as e:
         logging.error(f"Error deleting coupon: {e}")
@@ -576,6 +621,12 @@ def get_coupons_api():
         return jsonify({"success": True, "coupons": coupons_list})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
+
+@app.before_request
+def log_request_info():
+    logging.info(f"Request URL: {request.url}")
+    logging.info(f"Request method: {request.method}")
+    logging.info(f"Request data: {request.data}")
 
 @app.route("/lotto/coupon/lookup", methods=["GET"])
 def lookup_coupon():
@@ -639,4 +690,5 @@ def debug_latest_draw():
 
 if __name__ == "__main__":
     initialize_database()  # 데이터베이스 초기화
+    check_tables()
     app.run(host="0.0.0.0", port=5000)  # Flask 애플리케이션 실행
