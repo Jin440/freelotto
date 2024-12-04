@@ -10,28 +10,64 @@ import random
 import string
 import os
 import logging
+from google.cloud import storage
+
+storage_client = storage.Client()
+
+BUCKET_NAME = "freelotto"
+GCS_DATABASE_PATH = "db/lotto.db"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-DATABASE_PATH = os.path.join("/app", "db", "lotto.db")
+LOCAL_DATABASE_PATH = os.path.join(os.path.dirname(__file__), 'tmp_lotto.db')
+print(f"Database path: {LOCAL_DATABASE_PATH}")
 
 app = Flask(__name__)
 app.register_blueprint(lotto_routes)
 app.secret_key = "781643719382"
 
+# GCS에서 데이터베이스 파일을 다운로드하는 함수
+def download_db_from_gcs():
+    try:
+        # 버킷과 객체 지정
+        bucket = storage_client.get_bucket(BUCKET_NAME)
+        blob = bucket.blob(GCS_DATABASE_PATH)
+
+        # GCS에서 로컬 경로로 파일 다운로드
+        blob.download_to_filename(LOCAL_DATABASE_PATH)
+        logging.info(f"Database downloaded from GCS to {LOCAL_DATABASE_PATH}")
+    except Exception as e:
+        logging.error(f"Error downloading database from GCS: {e}")
+        raise
+
+# GCS에 데이터베이스 파일을 업로드하는 함수
+def upload_db_to_gcs():
+    try:
+        # 버킷과 객체 지정
+        bucket = storage_client.get_bucket(BUCKET_NAME)
+        blob = bucket.blob(GCS_DATABASE_PATH)
+
+        # 로컬 데이터베이스 파일을 GCS로 업로드
+        blob.upload_from_filename(LOCAL_DATABASE_PATH)
+        logging.info(f"Database uploaded to GCS from {LOCAL_DATABASE_PATH}")
+    except Exception as e:
+        logging.error(f"Error uploading database to GCS: {e}")
+        raise
+
 def initialize_database():
     """
-    데이터베이스 파일이 존재하지 않을 경우 생성하고 테이블을 초기화합니다.
+    데이터베이스 파일이 존재하지 않으면 GCS에서 다운로드하고, 테이블을 초기화합니다.
     """
     try:
-        if not os.path.exists(DATABASE_PATH):
-            os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
-            logging.info(f"Database directory created at: {os.path.dirname(DATABASE_PATH)}")
+        # GCS에서 데이터베이스 파일을 다운로드
+        download_db_from_gcs()
 
-        conn = sqlite3.connect(DATABASE_PATH)
+        # SQLite 데이터베이스 연결
+        conn = sqlite3.connect(LOCAL_DATABASE_PATH)
         cursor = conn.cursor()
-        logging.info(f"Connected to database at: {DATABASE_PATH}")
+        logging.info(f"Connected to database at: {LOCAL_DATABASE_PATH}")
 
+        # 테이블 생성 쿼리
         create_table_query = """
         CREATE TABLE IF NOT EXISTS coupons (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -59,11 +95,9 @@ def initialize_database():
         cursor.executescript(create_table_query)
         conn.commit()
         logging.info("Database tables created successfully.")
-
     except sqlite3.Error as e:
         logging.error(f"Error initializing database: {e}")
         raise
-
     finally:
         if conn:
             conn.close()
@@ -82,14 +116,26 @@ def login_required(f):
     return decorated_function
 
 def query_database(query, params=(), fetch_one=False):
-    conn = sqlite3.connect(DATABASE_PATH)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute(query, params)
-    conn.commit()
-    result = cursor.fetchone() if fetch_one else cursor.fetchall()
-    conn.close()
-    return result
+    try:
+        # GCS에서 데이터베이스 파일을 다운로드하여 로컬에서 작업
+        download_db_from_gcs()
+
+        # SQLite 데이터베이스 연결
+        conn = sqlite3.connect(LOCAL_DATABASE_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+        conn.commit()
+        result = cursor.fetchone() if fetch_one else cursor.fetchall()
+
+        # GCS로 데이터베이스 파일 업로드
+        upload_db_to_gcs()
+
+        conn.close()
+        return result
+    except sqlite3.Error as e:
+        logging.error(f"Database error: {e}")
+        return None
 
 def generate_coupon_code():
     """
@@ -156,6 +202,50 @@ def index():
 
 def home():
     return "Hello, Cloudtype!"
+
+# 구글 클라우드 스토리지에서 파일 업로드 처리
+@app.route("/upload", methods=["POST"])
+def upload_file():
+    if 'file' not in request.files:
+        flash("파일이 없습니다.")
+        return redirect(request.url)
+
+    file = request.files['file']
+    if file.filename == '':
+        flash("파일 이름이 없습니다.")
+        return redirect(request.url)
+
+    try:
+        # Google Cloud Storage 버킷 객체 가져오기
+        bucket = client.get_bucket(bucket_name)
+
+        # 파일을 버킷에 업로드
+        blob = bucket.blob(file.filename)
+        blob.upload_from_file(file)
+
+        flash(f"파일 {file.filename}이(가) 성공적으로 업로드되었습니다.")
+        return redirect(url_for('index'))
+
+    except Exception as e:
+        flash(f"파일 업로드 중 오류 발생: {e}")
+        return redirect(request.url)
+
+# 구글 클라우드 스토리지에서 파일 다운로드 처리
+@app.route("/download/<filename>", methods=["GET"])
+def download_file(filename):
+    try:
+        # Google Cloud Storage 버킷 객체 가져오기
+        bucket = client.get_bucket(bucket_name)
+
+        # 파일 객체 가져오기
+        blob = bucket.blob(filename)
+
+        # 파일을 클라이언트로 다운로드
+        return blob.download_as_text()
+
+    except Exception as e:
+        flash(f"파일 다운로드 중 오류 발생: {e}")
+        return redirect(url_for('index'))
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
@@ -422,20 +512,13 @@ def get_coupon_uses():
 @app.route("/admin/coupons", methods=["GET"])
 @login_required
 def get_coupons_page():
-    """
-    쿠폰 조회 페이지 또는 API
-    """
     try:
         coupons = query_database("SELECT * FROM coupons")
-        
-        # 요청 헤더에서 JSON 요청 여부 확인
-        accept_header = request.headers.get("Accept", "")
-        if "application/json" in accept_header:
-            return jsonify({"success": True, "coupons": [dict(row) for row in coupons]})
 
-        # HTML 페이지 반환
+        if request.accept_mimetypes.best == 'application/json':
+            return jsonify({"success": True, "coupons": [dict(coupon) for coupon in coupons]})
+
         return render_template("admin_coupons.html", coupons=coupons)
-
     except Exception as e:
         logging.error(f"Error fetching coupons: {e}")
         return jsonify({"success": False, "message": str(e)}), 500
@@ -444,9 +527,6 @@ def get_coupons_page():
 @app.route("/admin/coupons/create", methods=["POST"])
 @login_required
 def create_coupon():
-    """
-    쿠폰 생성 API
-    """
     try:
         coupon_code = generate_coupon_code()
         query_database(
